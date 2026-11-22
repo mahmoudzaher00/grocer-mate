@@ -7,22 +7,46 @@ class _Loading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Skeletonizer.zone(
-      child: GridView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-        gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: context.withFormFactor(onMobile: 2, onTablet: 4, onDesktop: 6),
-          crossAxisSpacing: 12.w,
-          mainAxisSpacing: 12.h,
-          childAspectRatio: 1.18,
+    final colorScheme = context.theme.colorScheme;
+
+    return Skeletonizer.sliver(
+      child: SliverPadding(
+        padding: EdgeInsetsDirectional.fromSTEB(20.w, 20.h, 20.w, 24.h),
+        sliver: SliverList.separated(
+          itemCount: _placeholderCount,
+          itemBuilder: (context, index) {
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 760),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(color: colorScheme.outline),
+                    boxShadow: ShadowManager.cardShadow(colorScheme.shadow),
+                  ),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 14.w),
+                      minTileHeight: 80.h,
+                      minLeadingWidth: 48.r,
+                      horizontalTitleGap: 16.w,
+                      leading: Bone.square(size: 48.r, uniRadius: 14.r),
+                      title: Bone.text(
+                        width: 112.w,
+                        style: context.textTheme.titleLarge?.copyWith(fontSize: 17.sp, height: 1.2),
+                      ),
+                      trailing: Bone.icon(size: 26.r),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+          separatorBuilder: (context, index) => SizedBox(height: 14.h),
         ),
-        itemCount: _placeholderCount,
-        itemBuilder: (context, index) {
-          return _CategoryCardFrame(
-            visual: Bone.circle(size: 48.r),
-            label: Bone.text(words: 2, style: context.textTheme.titleLarge?.copyWith(fontSize: 15.sp, height: 1.2)),
-          );
-        },
       ),
     );
   }

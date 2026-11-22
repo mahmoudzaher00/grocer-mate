@@ -38,12 +38,13 @@ class AppEntry extends StatelessWidget {
                 themeAnimationDuration: reduceMotion ? Duration.zero : AppConstants.themeAnimationDuration,
                 themeAnimationCurve: Curves.easeInOutCubic,
                 builder: (context, widgets) {
-                  final systemUiOverlayStyle = Theme.of(context).brightness == Brightness.dark ? AppConstants.statusBarOnDarkBackground : AppConstants.statusBarOnLightBackground;
+                  final brightness = Theme.of(context).brightness;
+                  final systemUiOverlayStyle = brightness == Brightness.dark ? AppConstants.statusBarOnDarkBackground : AppConstants.statusBarOnLightBackground;
 
                   return AnnotatedRegion<SystemUiOverlayStyle>(
                     value: systemUiOverlayStyle,
                     child: SkeletonizerConfig(
-                      data: appSkeletonizerConfig,
+                      data: appSkeletonizerConfig.copyWith(brightness: brightness),
                       child: MediaQuery(
                         data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
                         child: widgets!,

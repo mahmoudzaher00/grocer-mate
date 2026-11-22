@@ -19,7 +19,7 @@ ThemeData buildLightTheme() {
   final colorScheme = ColorScheme.fromSeed(seedColor: kPrimary, brightness: Brightness.light).copyWith(
     primary: kPrimary,
     onPrimary: kWhite,
-    secondary: kAccent,
+    secondary: kGreen,
     tertiary: kPrimaryDark,
     surface: kWhite,
     surfaceContainer: kLightBlueEA,
@@ -37,7 +37,7 @@ ThemeData buildDarkTheme() {
   final colorScheme = ColorScheme.fromSeed(seedColor: kPeriwinkle, brightness: Brightness.dark).copyWith(
     primary: kPeriwinkle,
     onPrimary: kGrey900,
-    secondary: kAccent,
+    secondary: kPeriwinkle,
     tertiary: kPrimaryLight,
     surface: kSurfaceDark,
     surfaceContainer: kGrey900,

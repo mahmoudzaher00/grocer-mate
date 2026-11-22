@@ -3,17 +3,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../core/resources/color_manager.dart';
 import '../../../../core/resources/route_names.dart';
+import '../../../../core/resources/shadow_manager.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/widgets/buttons/theme_toggle_button.dart';
-import '../../../../core/widgets/status_views/empty_state_widget.dart';
 import '../../domain/entities/category.dart';
+import '../extensions/category_visual_extensions.dart';
 import '../manager/bloc.dart';
 
 part 'widgets/body.dart';
 part 'widgets/category_card.dart';
-part 'widgets/categories_grid.dart';
+part 'widgets/categories_list.dart';
+part 'widgets/categories_sliver_app_bar.dart';
 part 'widgets/empty.dart';
 part 'widgets/error.dart';
 part 'widgets/loading.dart';
@@ -23,9 +24,6 @@ class CategoriesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(titleSpacing: 16.w, title: const Text('Categories'), actions: const [ThemeToggleButton(), SizedBox(width: 8)]),
-      body: const _Body(),
-    );
+    return const Scaffold(body: SafeArea(child: _Body()));
   }
 }

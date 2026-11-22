@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../app/app_constants.dart';
 import '../../blocs/theme/bloc.dart';
 import '../../resources/theme_manager.dart';
+import '../../utils/extensions/context_extensions.dart';
 
 class ThemeToggleButton extends StatelessWidget {
   const ThemeToggleButton({super.key});
@@ -32,7 +33,7 @@ class ThemeToggleButton extends StatelessWidget {
             ),
           );
         },
-        child: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined, key: ValueKey(isDark)),
+        child: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined, key: ValueKey(isDark),color: context.theme.colorScheme.secondary),
       ),
     );
   }

@@ -7,12 +7,18 @@ class _Body extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CategoriesBloc, CategoriesState>(
       builder: (context, state) {
-        return switch (state) {
-          CategoriesInitial() || CategoriesLoading() => const _Loading(),
-          CategoriesSuccess(:final categories) => _CategoriesGrid(categories: categories),
-          CategoriesEmpty() => const _Empty(),
-          CategoriesError(:final message) => _Error(message: message),
-        };
+        return CustomScrollView(
+          key: const PageStorageKey<String>('categories-scroll-view'),
+          slivers: [
+            const _CategoriesSliverAppBar(),
+            switch (state) {
+              CategoriesInitial() || CategoriesLoading() => const _Loading(),
+              CategoriesSuccess(:final categories) => _Error(message: 'test') /*_CategoriesList(categories: categories)*/,
+              CategoriesEmpty() => const _Empty(),
+              CategoriesError(:final message) => _Error(message: message),
+            },
+          ],
+        );
       },
     );
   }

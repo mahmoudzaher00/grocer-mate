@@ -5,6 +5,8 @@ import 'color_manager.dart';
 class ShadowManager {
   static final List<BoxShadow> brandMarkShadow = [BoxShadow(color: kPrimary.withValues(alpha: 0.16), blurRadius: 36, spreadRadius: 8, offset: const Offset(0, 14))];
 
+  static List<BoxShadow> cardShadow(Color color) => [BoxShadow(color: color, blurRadius: 8, offset: const Offset(0, 2))];
+
   static List<BoxShadow> shadow = [const BoxShadow(color: kShadowMd, blurRadius: 6, spreadRadius: 0, offset: Offset(0, 3))];
   static List<BoxShadow> noShadow = [const BoxShadow(color: Colors.transparent, blurRadius: 0, spreadRadius: 0, offset: Offset(0, 0))];
   static List<BoxShadow> checkBoxShadow = [const BoxShadow(color: kShadowSubtle, blurRadius: 2, spreadRadius: 0, offset: Offset(0, 1))];
