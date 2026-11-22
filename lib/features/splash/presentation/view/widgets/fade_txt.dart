@@ -12,7 +12,7 @@ class _FadeText extends StatelessWidget {
       child: Text(
         'Fresh choices. Simple shopping.',
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: kGrey600, letterSpacing: 0.2),
+        style: context.textTheme.bodyLarge?.copyWith(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.68), letterSpacing: 0.2),
       ),
     );
   }

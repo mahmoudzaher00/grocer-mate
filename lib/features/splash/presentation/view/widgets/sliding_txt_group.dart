@@ -9,6 +9,7 @@ class _SlidingTextGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = context.textTheme.headlineLarge?.copyWith(fontSize: (context.width * 0.1).clamp(34.0, 44.0), letterSpacing: -1.2);
+    final colorScheme = context.theme.colorScheme;
 
     return FadeTransition(
       opacity: opacity,
@@ -16,12 +17,12 @@ class _SlidingTextGroup extends StatelessWidget {
         position: offset,
         child: Text.rich(
           TextSpan(
-            style: titleStyle?.copyWith(color: kPrimaryDark),
+            style: titleStyle?.copyWith(color: colorScheme.tertiary),
             children: [
               const TextSpan(text: 'Grocer'),
               TextSpan(
                 text: 'Mate',
-                style: titleStyle?.copyWith(color: kPrimary),
+                style: titleStyle?.copyWith(color: colorScheme.primary),
               ),
             ],
           ),

@@ -1,10 +1,9 @@
 import '../../utils/extensions/context_extensions.dart';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../resources/asset_manager.dart';
-import '../../resources/color_manager.dart';
 import '../buttons/elevated_button.dart';
 
 class EmptyStateWidget extends StatelessWidget {
@@ -16,18 +15,24 @@ class EmptyStateWidget extends StatelessWidget {
     this.showButton = true,
     this.useScrollView = true,
     this.svgAsset,
+    this.icon,
     this.titleText,
     this.contentText,
     this.svgHeight,
+    this.iconSize,
     this.btnText,
     this.onPressed,
     this.titleStyle,
     this.contentStyle,
     this.svgColor,
+    this.iconColor,
     super.key,
   });
   final String? svgAsset;
   final Color? svgColor;
+  final IconData? icon;
+  final Color? iconColor;
+  final double? iconSize;
   final String? btnText;
   final String? titleText;
   final TextStyle? titleStyle;
@@ -42,29 +47,42 @@ class EmptyStateWidget extends StatelessWidget {
   final Color? btnTxtColor;
   final Color? btnBgColor;
 
+  Widget? _buildIllustration(BuildContext context) {
+    if (svgAsset != null) {
+      return SvgPicture.asset(svgAsset!, height: svgHeight, colorFilter: svgColor != null ? ColorFilter.mode(svgColor!, BlendMode.srcIn) : null);
+    }
+
+    if (icon != null) {
+      return Icon(icon, size: iconSize ?? 64.r, color: iconColor ?? context.theme.colorScheme.primary);
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final colorScheme = context.theme.colorScheme;
+    final illustration = _buildIllustration(context);
+
     final content = Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SvgPicture.asset(svgAsset ??' SvgAssets.emptyTasks', height: svgHeight,colorFilter: svgColor!=null?ColorFilter.mode(svgColor!, BlendMode.srcIn) : null,),
-        SizedBox(height: 8.h),
+        if (illustration != null) ...[illustration, SizedBox(height: 16.h)],
         Text(
           titleText ?? '-',
-          style: titleStyle??context.textTheme.titleLarge?.copyWith(
-            fontSize: 24.sp,
-            color: kPrimary,
+          style: titleStyle ?? context.textTheme.titleLarge?.copyWith(fontSize: 24.sp, color: colorScheme.primary),
+        ),
+        if (contentText != null && contentText!.isNotEmpty) ...[
+          SizedBox(height: 8.h),
+          Text(
+            contentText!,
+            style: contentStyle ?? context.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.68)),
+            textAlign: TextAlign.center,
           ),
-        ),
-        SizedBox(height: 8.h),
-        Text(
-          contentText ?? '',
-          style: contentStyle??context.textTheme.bodyLarge?.copyWith(color: kGrey6C),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: 24.h),
-        if (showButton)
+        ],
+        if (showButton) ...[
+          SizedBox(height: 24.h),
           ElevatedButtonWidget(
             onPressed: onPressed,
             // width: context.width,
@@ -74,10 +92,11 @@ class EmptyStateWidget extends StatelessWidget {
             fontWeight: FontWeight.w500,
             radius: 12,
             svgAsset: 'SvgAssets.icPlus',
-            svgColor: btnTxtColor ?? kWhite,
-            textColor: btnTxtColor ?? kWhite,
-            backgroundColor: btnBgColor ?? kPrimary,
+            svgColor: btnTxtColor ?? colorScheme.onPrimary,
+            textColor: btnTxtColor ?? colorScheme.onPrimary,
+            backgroundColor: btnBgColor ?? colorScheme.primary,
           ),
+        ],
       ],
     );
     return SizedBox(

@@ -81,9 +81,11 @@ class _BodyState extends State<_Body> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = context.theme.colorScheme;
+
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [kWhite, kLightBlueEA, kBackground]),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [colorScheme.surface, colorScheme.surfaceContainer, context.theme.scaffoldBackgroundColor]),
       ),
       child: Stack(
         fit: StackFit.expand,

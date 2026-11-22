@@ -1,0 +1,11 @@
+{
+  "categories": [
+    {"id": "c_fruit", "name": "Fruits", "iconName": "produce"},
+    {"id": "c_dairy", "name": "Dairy", "iconName": "dairy"},
+    {"id": "c_bakery", "name": "Bakery", "iconName": "bakery"},
+    {"id": "c_beverages", "name": "Beverages", "iconName": "beverages"},
+    {"id": "c_pantry", "name": "Pantry", "iconName": "pantry"},
+    {"id": "c_household", "name": "Household", "iconName": "household"},
+    {"id": "c_personal", "name": "Personal Care", "iconName": "personalCare"}
+  ]
+}

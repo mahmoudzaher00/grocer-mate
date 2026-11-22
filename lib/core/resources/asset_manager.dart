@@ -2,11 +2,13 @@ const String imagePath = 'assets/images';
 const String svgPath = 'assets/svgs';
 const String jsonPath = 'assets/jsons';
 
-class ImageAssets {
-}
+class ImageAssets {}
 
 class SvgAssets {
   static const String logo = '$svgPath/logo.svg';
 }
 
-class JsonAssets {}
+class JsonAssets {
+  static const String categories = '$jsonPath/categories.json';
+  static const String products = '$jsonPath/products.json';
+}

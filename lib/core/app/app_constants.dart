@@ -17,9 +17,24 @@ class AppConstants {
   static const Duration attachmentUploadReceiveTimeout = Duration(seconds: 60);
   static const animationDuration = Duration(milliseconds: 180);
   static const defaultDebounceDuration = Duration(milliseconds: 600);
+  static const themeAnimationDuration = Duration(milliseconds: 350);
+  static const themeIconAnimationDuration = Duration(milliseconds: 250);
 
   static const SystemUiOverlayStyle statusBarOnTransparent = SystemUiOverlayStyle(statusBarColor: kTransparent, statusBarIconBrightness: Brightness.dark, statusBarBrightness: Brightness.light);
-  static const SystemUiOverlayStyle statusBarOnLightBackground = SystemUiOverlayStyle(statusBarColor: kWhite, statusBarIconBrightness: Brightness.dark, statusBarBrightness: Brightness.light);
+  static const SystemUiOverlayStyle statusBarOnLightBackground = SystemUiOverlayStyle(
+    statusBarColor: kWhite,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
+    systemNavigationBarColor: kBackground,
+    systemNavigationBarIconBrightness: Brightness.dark,
+  );
+  static const SystemUiOverlayStyle statusBarOnDarkBackground = SystemUiOverlayStyle(
+    statusBarColor: kBackgroundDark,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+    systemNavigationBarColor: kBackgroundDark,
+    systemNavigationBarIconBrightness: Brightness.light,
+  );
 
   static void hideKeyboard(BuildContext context) => FocusScope.of(context).requestFocus(FocusNode());
 
