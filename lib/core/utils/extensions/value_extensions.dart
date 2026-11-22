@@ -1,0 +1,129 @@
+import 'package:material_ui/material_ui.dart';
+
+import '../../app/app_constants.dart';
+
+const List<String> _englishDigits = <String>['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+const List<String> _arabicDigits = <String>['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+
+const String _dash = '-';
+
+String _convertDigits({required String value, required List<String> sourceDigits, required List<String> targetDigits}) {
+  var result = value;
+
+  for (var index = 0; index < sourceDigits.length; index++) {
+    result = result.replaceAll(sourceDigits[index], targetDigits[index]);
+  }
+
+  return result;
+}
+
+String? _trimmedOrNull(String? value) {
+  final trimmedValue = value?.trim();
+
+  if (trimmedValue == null || trimmedValue.isEmpty) {
+    return null;
+  }
+
+  return trimmedValue;
+}
+
+String _normalizeComparableString(String value) {
+  return value.trim().toLowerCase().replaceAll(RegExp(r'\s+'), AppConstants.empty);
+}
+
+/// Converts Arabic numerals to English numerals.
+extension ArabicNumberConverter on String {
+  String get arabicNumberToEnglish {
+    return _convertDigits(value: this, sourceDigits: _arabicDigits, targetDigits: _englishDigits);
+  }
+}
+
+/// Converts English numerals to Arabic numerals.
+extension EnglishNumberConverter on String {
+  String get englishNumberToArabic {
+    return _convertDigits(value: this, sourceDigits: _englishDigits, targetDigits: _arabicDigits);
+  }
+}
+
+/// Provides fallback values for nullable strings.
+extension NullableStringExtension on String? {
+  /// Returns an empty string when the value is null.
+  ///
+  /// This intentionally does not trim the original value.
+  String orEmpty() {
+    return this ?? AppConstants.empty;
+  }
+
+  /// Returns the trimmed value or the localized "not specified" text.
+  String get orNotSpecified {
+    return _trimmedOrNull(this) ?? 'Not Specified';
+  }
+
+  /// Returns the trimmed value or a dash.
+  String get orDash {
+    return _trimmedOrNull(this) ?? _dash;
+  }
+}
+
+/// Provides utilities for collections of nullable strings.
+extension NormalizedStringValues on Iterable<String?> {
+  String resolveName({required String fallback}) {
+    for (final value in this) {
+      final normalizedValue = _trimmedOrNull(value);
+
+      if (normalizedValue != null) {
+        return normalizedValue;
+      }
+    }
+
+    return fallback;
+  }
+
+  bool hasNormalizedValue(String expected) {
+    final normalizedExpected = _normalizeComparableString(expected);
+
+    return any((value) {
+      if (value == null) {
+        return false;
+      }
+
+      return _normalizeComparableString(value) == normalizedExpected;
+    });
+  }
+}
+
+/// Provides fallback values for nullable integers.
+extension NullableInt on int? {
+  int orZero() {
+    return this ?? AppConstants.zero;
+  }
+
+  String get formattedProgress {
+    final value = this;
+    if (value == null) return _dash;
+
+    return '${value.clamp(0, 100)}%';
+  }
+}
+
+/// Generates initials from a person's name.
+extension UserInitialsExtension on String {
+  String get initials {
+    final nameParts = trim().split(RegExp(r'\s+')).where((part) => part.isNotEmpty).toList();
+
+    if (nameParts.isEmpty) {
+      return AppConstants.empty;
+    }
+
+    final firstInitial = nameParts.first.characters.first;
+
+    if (nameParts.length == 1) {
+      return firstInitial.toUpperCase();
+    }
+
+    final lastInitial = nameParts.last.characters.first;
+
+    return '$firstInitial$lastInitial'.toUpperCase();
+  }
+}
