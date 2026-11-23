@@ -11,4 +11,6 @@ class SvgAssets {
 class JsonAssets {
   static const String categories = '$jsonPath/categories.json';
   static const String products = '$jsonPath/products.json';
+  static const String productDetails = '$jsonPath/product_details.json';
+  static const String flags = '$jsonPath/flags.json';
 }

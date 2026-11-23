@@ -9,7 +9,7 @@ class GetProducts {
 
   final CatalogRepository _repository;
 
-  Future<Either<Failure, ProductPage>> call({required String categoryId, required int page, required int pageSize}) {
-    return _repository.getProducts(categoryId: categoryId, page: page, pageSize: pageSize);
+  Future<Either<Failure, ProductPage>> call({required int page, required int pageSize, String? categoryId, String? brand, String searchQuery = ''}) {
+    return _repository.getProducts(categoryId: categoryId, brand: brand, searchQuery: searchQuery, page: page, pageSize: pageSize);
   }
 }

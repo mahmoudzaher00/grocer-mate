@@ -1,0 +1,185 @@
+{
+  "productDetails": [
+    {
+      "productId": "p_apple_gala",
+      "images": ["https://picsum.photos/seed/apple/600/400"],
+      "description": "Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads.Crisp and sweet Gala apples selected for snacking, baking, and fresh fruit salads."
+    },
+    {
+      "productId": "p_banana_chiquita",
+      "images": ["https://picsum.photos/seed/banana/600/400"],
+      "description": "Naturally sweet bananas with a smooth texture, ideal for breakfast, smoothies, or an easy snack."
+    },
+    {
+      "productId": "p_orange_navel",
+      "images": ["https://picsum.photos/seed/orange/600/400"],
+      "description": "Juicy seedless Navel oranges with a bright citrus flavor and an easy-to-peel skin."
+    },
+    {
+      "productId": "p_grapes_red",
+      "images": ["https://picsum.photos/seed/grapes/600/400"],
+      "description": "Sweet red grapes with a crisp bite, packed in a convenient 500g box."
+    },
+    {
+      "productId": "p_strawberry_box",
+      "images": [
+        "https://picsum.photos/seed/strawberry/600/400",
+        "https://picsum.photos/seed/strawberry2/600/400"
+      ],
+      "description": "Fresh strawberries chosen for their vibrant color, fragrant aroma, and balanced sweetness."
+    },
+    {
+      "productId": "p_avocado_hass",
+      "images": ["https://picsum.photos/seed/avocado/600/400"],
+      "description": "Creamy Hass avocados suitable for toast, salads, dips, and everyday meals."
+    },
+    {
+      "productId": "p_lemon_fresh",
+      "images": ["https://picsum.photos/seed/lemon/600/400"],
+      "description": "Fresh lemons with a lively aroma and tart flavor for drinks, dressings, and cooking."
+    },
+    {
+      "productId": "p_mango_kent",
+      "images": ["https://picsum.photos/seed/mango/600/400"],
+      "description": "Ripe Kent mangoes with smooth flesh and a rich tropical sweetness."
+    },
+    {
+      "productId": "p_blueberries_box",
+      "images": ["https://picsum.photos/seed/blueberries/600/400"],
+      "description": "Plump blueberries with a delicate sweetness, ready for yogurt, cereal, or snacking."
+    },
+    {
+      "productId": "p_pears_green",
+      "images": ["https://picsum.photos/seed/pears/600/400"],
+      "description": "Green pears with juicy flesh and a gentle sweetness that develops as they ripen."
+    },
+    {
+      "productId": "p_watermelon_seedless",
+      "images": ["https://picsum.photos/seed/watermelon/600/400"],
+      "description": "Refreshing seedless watermelon with crisp, juicy flesh for sharing and summer snacks."
+    },
+    {
+      "productId": "p_pineapple_gold",
+      "images": ["https://picsum.photos/seed/pineapple/600/400"],
+      "description": "Golden pineapple with fragrant, tangy-sweet flesh and a juicy finish."
+    },
+    {
+      "productId": "p_kiwi_green",
+      "images": ["https://picsum.photos/seed/kiwi/600/400"],
+      "description": "Green kiwi fruit with a refreshing sweet-tart taste and tender texture."
+    },
+    {
+      "productId": "p_peaches_yellow",
+      "images": ["https://picsum.photos/seed/peaches/600/400"],
+      "description": "Yellow peaches with soft, aromatic flesh and a balanced natural sweetness."
+    },
+    {
+      "productId": "p_milk_2pct",
+      "images": [
+        "https://picsum.photos/seed/milk1/600/400",
+        "https://picsum.photos/seed/milk2/600/400"
+      ],
+      "description": "Pasteurized 2% cow milk with a smooth taste for drinking, cereal, coffee, and cooking."
+    },
+    {
+      "productId": "p_cheddar_block",
+      "images": ["https://picsum.photos/seed/cheddar/600/400"],
+      "description": "A versatile cheddar cheese block with a balanced savory flavor and firm texture."
+    },
+    {
+      "productId": "p_yogurt_plain",
+      "images": ["https://picsum.photos/seed/yogurt/600/400"],
+      "description": "Creamy plain yogurt with a clean, lightly tangy flavor and no added sweetness."
+    },
+    {
+      "productId": "p_eggs_large",
+      "images": ["https://picsum.photos/seed/eggs/600/400"],
+      "description": "A dozen large eggs for breakfast, baking, and everyday home cooking."
+    },
+    {
+      "productId": "p_bread_sourdough",
+      "images": ["https://picsum.photos/seed/sourdough/600/400"],
+      "description": "Artisan sourdough bread made with natural starter for a crisp crust and gently tangy crumb."
+    },
+    {
+      "productId": "p_croissant_butter",
+      "images": ["https://picsum.photos/seed/croissant/600/400"],
+      "description": "Flaky butter croissants with delicate layers and a rich bakery-fresh aroma."
+    },
+    {
+      "productId": "p_muffin_blueberry",
+      "images": ["https://picsum.photos/seed/muffin/600/400"],
+      "description": "Soft blueberry muffins with fruit throughout, packed as four convenient portions."
+    },
+    {
+      "productId": "p_orange_juice",
+      "images": ["https://picsum.photos/seed/orangejuice/600/400"],
+      "description": "Refreshing orange juice with bright citrus flavor in a family-friendly one-liter bottle."
+    },
+    {
+      "productId": "p_sparkling_water",
+      "images": ["https://picsum.photos/seed/sparklingwater/600/400"],
+      "description": "Crisp sparkling water in six individual cans for meals, travel, or refreshment."
+    },
+    {
+      "productId": "p_coffee_cold_brew",
+      "images": [
+        "https://picsum.photos/seed/coldbrew/600/400",
+        "https://picsum.photos/seed/coldbrew2/600/400"
+      ],
+      "description": "Smooth ready-to-drink cold brew coffee with a bold aroma and mellow finish."
+    },
+    {
+      "productId": "p_pasta_spaghetti",
+      "images": ["https://picsum.photos/seed/spaghetti/600/400"],
+      "description": "Classic dried spaghetti with a firm texture that pairs well with everyday sauces."
+    },
+    {
+      "productId": "p_rice_basmati",
+      "images": ["https://picsum.photos/seed/basmatirice/600/400"],
+      "description": "Aromatic basmati rice with long grains that cook light and fluffy."
+    },
+    {
+      "productId": "p_tomato_sauce",
+      "images": ["https://picsum.photos/seed/tomatosauce/600/400"],
+      "description": "Smooth tomato sauce prepared for pasta, pizza, casseroles, and quick family meals."
+    },
+    {
+      "productId": "p_dish_soap",
+      "images": ["https://picsum.photos/seed/dishsoap/600/400"],
+      "description": "Concentrated dish soap formulated to lift grease while rinsing clean."
+    },
+    {
+      "productId": "p_paper_towels",
+      "images": ["https://picsum.photos/seed/papertowels/600/400"],
+      "description": "Absorbent paper towels for kitchen spills, wiping, and everyday household cleaning."
+    },
+    {
+      "productId": "p_laundry_capsules",
+      "images": [
+        "https://picsum.photos/seed/laundry/600/400",
+        "https://picsum.photos/seed/laundry2/600/400",
+        "https://picsum.photos/seed/laundry3/600/400"
+      ],
+      "description": "Pre-measured laundry capsules designed for convenient cleaning and a fresh finish."
+    },
+    {
+      "productId": "p_hand_wash",
+      "images": ["https://picsum.photos/seed/handwash/600/400"],
+      "description": "Moisturizing hand wash that cleans gently and leaves hands feeling comfortable."
+    },
+    {
+      "productId": "p_shampoo_daily",
+      "images": [
+        "https://picsum.photos/seed/shampoo/600/400",
+        "https://picsum.photos/seed/shampoo2/600/400"
+      ],
+      "description": "Gentle daily shampoo formulated to cleanse hair without weighing it down."
+    },
+    {
+      "productId": "p_toothpaste_mint",
+      "images": ["https://picsum.photos/seed/toothpaste/600/400"],
+      "description": "Fresh mint toothpaste for everyday cleaning and a clean, refreshed feeling."
+    }
+  ]
+}

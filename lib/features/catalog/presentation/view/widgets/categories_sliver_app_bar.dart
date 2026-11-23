@@ -43,6 +43,7 @@ class _CategoriesSliverAppBar extends StatelessWidget {
                     style: context.textTheme.titleLarge?.copyWith(color: brandColor, fontSize: 19.sp),
                   ),
                 ),
+                const CartButton(),
                 const ThemeToggleButton(),
               ],
             ),

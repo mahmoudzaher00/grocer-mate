@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../features/cart/presentation/manager/bloc.dart';
 import '../blocs/theme/bloc.dart';
 import '../resources/route_manager.dart';
 import 'app_constants.dart';
@@ -17,8 +18,11 @@ class AppEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint('🧱 AppEntry - build');
 
-    return BlocProvider<ThemeBloc>.value(
-      value: instance<ThemeBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeBloc>.value(value: instance<ThemeBloc>()),
+        BlocProvider<CartBloc>.value(value: instance<CartBloc>()),
+      ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
         minTextAdapt: true,

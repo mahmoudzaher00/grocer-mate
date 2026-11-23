@@ -22,7 +22,10 @@ class _ProductsList extends StatelessWidget {
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 760),
-                child: _ProductCard(product: products[index]),
+                child: _ProductCard(
+                  product: products[index],
+                  onTap: () => Navigator.of(context).pushNamed(productDetailsRoute, arguments: products[index]),
+                ),
               ),
             ),
           );

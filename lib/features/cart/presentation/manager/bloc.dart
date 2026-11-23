@@ -1,0 +1,111 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../catalog/domain/entities/product.dart';
+import '../../domain/entities/cart.dart';
+import '../../domain/entities/cart_item.dart';
+import '../../domain/use_cases/load_cart.dart';
+import '../../domain/use_cases/save_cart.dart';
+
+part 'events.dart';
+part 'states.dart';
+
+class CartBloc extends Bloc<CartEvent, CartState> {
+  /// Listener *****************************************************************
+
+  CartBloc(this._loadCart, this._saveCart) : super(const CartInitial()) {
+    on<CartEvent>(_onEvent, transformer: _sequential());
+  }
+
+  /// Data *********************************************************************
+
+  final LoadCart _loadCart;
+  final SaveCart _saveCart;
+
+  /// Logic ********************************************************************
+
+  EventTransformer<E> _sequential<E>() {
+    return (events, mapper) => events.asyncExpand(mapper);
+  }
+
+  Future<void> _onEvent(CartEvent event, Emitter<CartState> emit) {
+    return switch (event) {
+      CartRequested() || CartRetried() => _onCartRequested(emit),
+      CartProductAdded() => _onProductAdded(event, emit),
+      CartQuantityChanged() => _onQuantityChanged(event, emit),
+      CartItemRemoved() => _onItemRemoved(event, emit),
+    };
+  }
+
+  Cart? get _currentCart => state.cart;
+
+  void _emitCart(Cart cart, Emitter<CartState> emit) {
+    emit(cart.isEmpty ? CartEmpty(cart) : CartReady(cart));
+  }
+
+  List<CartItem> _replaceItem(List<CartItem> items, String productId, CartItem replacement) {
+    return items.map((item) => item.product.id == productId ? replacement : item).toList(growable: false);
+  }
+
+  Future<void> _persist(Cart previousCart, Cart updatedCart, Emitter<CartState> emit) async {
+    final result = await _saveCart(updatedCart.items);
+    result.fold((failure) => emit(CartActionFailure(cart: previousCart, message: failure.errMessage)), (_) => _emitCart(updatedCart, emit));
+  }
+
+  /// Api & Request ************************************************************
+
+  Future<void> _onCartRequested(Emitter<CartState> emit) async {
+    emit(const CartLoading());
+    final result = await _loadCart();
+    result.fold((failure) => emit(CartError(failure.errMessage)), (cart) => _emitCart(cart, emit));
+  }
+
+  Future<void> _onProductAdded(CartProductAdded event, Emitter<CartState> emit) async {
+    final cart = _currentCart;
+    if (cart == null || event.quantity < 1 || event.product.isOutOfStock) return;
+
+    final existingQuantity = cart.quantityFor(event.product.id);
+    final updatedQuantity = (existingQuantity + event.quantity).clamp(0, event.product.stock).toInt();
+    if (updatedQuantity == existingQuantity) return;
+
+    final items = <CartItem>[];
+    var didReplace = false;
+    for (final item in cart.items) {
+      if (item.product.id == event.product.id) {
+        items.add(CartItem(product: event.product, quantity: updatedQuantity));
+        didReplace = true;
+      } else {
+        items.add(item);
+      }
+    }
+    if (!didReplace) {
+      items.add(CartItem(product: event.product, quantity: updatedQuantity));
+    }
+    await _persist(cart, cart.copyWith(items: items), emit);
+  }
+
+  Future<void> _onQuantityChanged(CartQuantityChanged event, Emitter<CartState> emit) async {
+    final cart = _currentCart;
+    if (cart == null) return;
+
+    CartItem? currentItem;
+    for (final item in cart.items) {
+      if (item.product.id == event.productId) {
+        currentItem = item;
+        break;
+      }
+    }
+    if (currentItem == null || event.quantity < 1 || event.quantity > currentItem.product.stock || event.quantity == currentItem.quantity) return;
+
+    final items = _replaceItem(cart.items, event.productId, currentItem.copyWith(quantity: event.quantity));
+    await _persist(cart, cart.copyWith(items: items), emit);
+  }
+
+  Future<void> _onItemRemoved(CartItemRemoved event, Emitter<CartState> emit) async {
+    final cart = _currentCart;
+    if (cart == null || cart.quantityFor(event.productId) == 0) return;
+
+    final items = cart.items.where((item) => item.product.id != event.productId).toList(growable: false);
+    await _persist(cart, cart.copyWith(items: items), emit);
+  }
+}

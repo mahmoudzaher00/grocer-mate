@@ -1,9 +1,8 @@
 part of '../view.dart';
 
 class _Error extends StatelessWidget {
-  const _Error({required this.categoryId, required this.message});
+  const _Error({required this.message});
 
-  final String categoryId;
   final String message;
 
   @override
@@ -14,7 +13,7 @@ class _Error extends StatelessWidget {
         title: 'Products could not be loaded',
         message: message,
         onRetry: () {
-          context.read<ProductsBloc>().add(ProductsRequested(categoryId));
+          context.read<ProductsBloc>().add(const ProductsRetried());
         },
       ),
     );

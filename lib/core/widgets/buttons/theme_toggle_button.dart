@@ -7,7 +7,9 @@ import '../../resources/theme_manager.dart';
 import '../../utils/extensions/context_extensions.dart';
 
 class ThemeToggleButton extends StatelessWidget {
-  const ThemeToggleButton({super.key});
+  const ThemeToggleButton({this.color, super.key});
+
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,7 @@ class ThemeToggleButton extends StatelessWidget {
             ),
           );
         },
-        child: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined, key: ValueKey(isDark),color: context.theme.colorScheme.secondary),
+        child: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined, key: ValueKey(isDark), color: color ?? context.theme.colorScheme.secondary),
       ),
     );
   }

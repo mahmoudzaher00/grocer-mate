@@ -7,17 +7,15 @@ class _ProductsSliverAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.theme.colorScheme;
-
     return SliverAppBar(
       primary: false,
       pinned: true,
       elevation: 0,
       scrolledUnderElevation: 0,
-      backgroundColor: colorScheme.surface,
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       title: Text(title),
-      actions: const [ThemeToggleButton(), SizedBox(width: 8)],
+      actions: const [CartButton(), ThemeToggleButton(), SizedBox(width: 8)],
     );
   }
 }

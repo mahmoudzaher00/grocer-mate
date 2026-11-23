@@ -4,12 +4,14 @@ import 'package:material_ui/material_ui.dart';
 import '../../utils/extensions/context_extensions.dart';
 
 class EmptyStateWidget extends StatelessWidget {
-  const EmptyStateWidget({required this.title, this.icon = Icons.grid_view_rounded, this.message, this.accentColor, super.key});
+  const EmptyStateWidget({required this.title, this.icon = Icons.grid_view_rounded, this.message, this.accentColor, this.actionLabel, this.onAction, super.key});
 
   final String title;
   final IconData icon;
   final String? message;
   final Color? accentColor;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,7 @@ class EmptyStateWidget extends StatelessWidget {
                 style: context.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.68)),
               ),
             ],
+            if (actionLabel != null && onAction != null) ...[SizedBox(height: 24.h), FilledButton.icon(onPressed: onAction, icon: const Icon(Icons.restart_alt_rounded), label: Text(actionLabel!))],
           ],
         ),
       ),

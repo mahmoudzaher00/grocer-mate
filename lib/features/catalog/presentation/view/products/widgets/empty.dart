@@ -1,13 +1,21 @@
 part of '../view.dart';
 
 class _Empty extends StatelessWidget {
-  const _Empty();
+  const _Empty({required this.hasActiveFilters});
+
+  final bool hasActiveFilters;
 
   @override
   Widget build(BuildContext context) {
-    return const SliverFillRemaining(
+    return SliverFillRemaining(
       hasScrollBody: false,
-      child: EmptyStateWidget(title: 'No products yet', message: 'There are no products available in this category.', icon: Icons.inventory_2_outlined),
+      child: EmptyStateWidget(
+        title: hasActiveFilters ? 'No matching products' : 'No products yet',
+        message: hasActiveFilters ? 'Try another search or clear the active filters.' : 'There are no products available yet.',
+        icon: hasActiveFilters ? Icons.search_off_rounded : Icons.inventory_2_outlined,
+        actionLabel: hasActiveFilters ? 'Clear all' : null,
+        onAction: hasActiveFilters ? () => context.read<ProductsBloc>().add(const ProductsFiltersCleared()) : null,
+      ),
     );
   }
 }
