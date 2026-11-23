@@ -15,7 +15,7 @@ class _ProductCard extends StatelessWidget {
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: colorScheme.outline),
-        boxShadow: [BoxShadow(color: colorScheme.shadow, blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: ShadowManager.cardShadow(colorScheme.shadow),
       ),
       child: Padding(
         padding: EdgeInsets.all(12.r),
@@ -96,25 +96,7 @@ class _ProductImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.theme.colorScheme;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12.r),
-      child: CachedNetworkImage(
-        imageUrl: imageUrl,
-        width: 104.r,
-        height: 112.r,
-        fit: BoxFit.cover,
-        placeholder: (context, _) => ColoredBox(
-          color: colorScheme.surfaceContainer,
-          child: Center(
-            child: SizedBox.square(dimension: 24.r, child: const CircularProgressIndicator(strokeWidth: 2)),
-          ),
-        ),
-        errorWidget: (context, _, _) => ColoredBox(
-          color: colorScheme.surfaceContainer,
-          child: Center(child: Icon(Icons.image_not_supported_outlined, color: colorScheme.onSurface.withValues(alpha: 0.55))),
-        ),
-      ),
-    );
+    return NetworkImageWidget(image: imageUrl, width: 104.r, height: 112.r, radius: 12.r, fit: BoxFit.cover, bgColor: colorScheme.surfaceContainer);
   }
 }
 

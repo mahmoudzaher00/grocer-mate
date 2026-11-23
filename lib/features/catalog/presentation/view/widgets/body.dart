@@ -13,7 +13,7 @@ class _Body extends StatelessWidget {
             const _CategoriesSliverAppBar(),
             switch (state) {
               CategoriesInitial() || CategoriesLoading() => const _Loading(),
-              CategoriesSuccess(:final categories) => _Error(message: 'test') /*_CategoriesList(categories: categories)*/,
+              CategoriesSuccess(:final categories) => _CategoriesList(categories: categories),
               CategoriesEmpty() => const _Empty(),
               CategoriesError(:final message) => _Error(message: message),
             },

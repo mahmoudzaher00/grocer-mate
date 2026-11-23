@@ -1,29 +1,20 @@
 part of '../view.dart';
 
 class _ProductsList extends StatelessWidget {
-  const _ProductsList({required this.products, required this.hasNextPage, this.isLoadingNextPage = false, this.pageErrorMessage});
+  const _ProductsList({required this.products, this.showEndMessage = false});
 
   final List<Product> products;
-  final bool hasNextPage;
-  final bool isLoadingNextPage;
-  final String? pageErrorMessage;
+  final bool showEndMessage;
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (notification.metrics.axis == Axis.vertical && notification.metrics.extentAfter <= 320.h) {
-          context.read<ProductsBloc>().add(const ProductsNextPageRequested());
-        }
-        return false;
-      },
-      child: ListView.builder(
-        key: const PageStorageKey<String>('products-list'),
-        padding: EdgeInsetsDirectional.fromSTEB(16.w, 16.h, 16.w, 24.h),
-        itemCount: products.length + 1,
+    return SliverPadding(
+      padding: EdgeInsetsDirectional.fromSTEB(16.w, 16.h, 16.w, 0),
+      sliver: SliverList.builder(
+        itemCount: products.length + (showEndMessage ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == products.length) {
-            return _PaginationFooter(hasNextPage: hasNextPage, isLoading: isLoadingNextPage, errorMessage: pageErrorMessage);
+            return const _PaginationEndMessage();
           }
 
           return Padding(

@@ -7,6 +7,8 @@ import '../../../../core/resources/route_names.dart';
 import '../../../../core/resources/shadow_manager.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/widgets/buttons/theme_toggle_button.dart';
+import '../../../../core/widgets/status_views/empty_state_widget.dart';
+import '../../../../core/widgets/status_views/error_state_widget.dart';
 import '../../domain/entities/category.dart';
 import '../extensions/category_visual_extensions.dart';
 import '../manager/bloc.dart';
