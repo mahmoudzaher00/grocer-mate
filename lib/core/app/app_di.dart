@@ -7,6 +7,7 @@ import '../../features/cart/domain/repositories/cart_repository.dart';
 import '../../features/cart/domain/use_cases/load_cart.dart';
 import '../../features/cart/domain/use_cases/save_cart.dart';
 import '../../features/cart/presentation/manager/bloc.dart';
+import '../../features/catalog/data/data_sources/catalog_cache_data_source.dart';
 import '../../features/catalog/data/data_sources/catalog_local_data_source.dart';
 import '../../features/catalog/data/repositories/catalog_repository_impl.dart';
 import '../../features/catalog/domain/repositories/catalog_repository.dart';
@@ -22,7 +23,9 @@ import '../../features/checkout/data/repositories/checkout_repository_impl.dart'
 import '../../features/checkout/domain/repositories/checkout_repository.dart';
 import '../../features/checkout/domain/use_cases/submit_purchase.dart';
 import '../../features/checkout/presentation/manager/bloc.dart';
+import '../blocs/connectivity/bloc.dart';
 import '../blocs/theme/bloc.dart';
+import '../resources/network_manager.dart';
 import 'app_prefs.dart';
 
 final instance = GetIt.instance;
@@ -30,14 +33,16 @@ final instance = GetIt.instance;
 Future<void> initializeDependencies() async {
   /// Core / Generics **********************************************************
   instance.registerSingleton<AppPreferences>(await AppPreferences.create());
+  instance.registerLazySingleton<NetworkManager>(() => NetworkManager());
 
   /// Data sources *************************************************************
   instance.registerLazySingleton<CatalogLocalDataSource>(() => CatalogLocalDataSourceImpl(simulatePaginationFailure: kDebugMode));
+  instance.registerLazySingleton<CatalogCacheDataSource>(() => CatalogCacheDataSourceImpl(instance<AppPreferences>()));
   instance.registerLazySingleton<CartLocalDataSource>(() => CartLocalDataSourceImpl(instance<AppPreferences>()));
   instance.registerLazySingleton<CheckoutLocalDataSource>(() => CheckoutLocalDataSourceImpl());
 
   /// Repositories *************************************************************
-  instance.registerLazySingleton<CatalogRepository>(() => CatalogRepositoryImpl(instance<CatalogLocalDataSource>()));
+  instance.registerLazySingleton<CatalogRepository>(() => CatalogRepositoryImpl(instance<CatalogLocalDataSource>(), instance<CatalogCacheDataSource>(), instance<NetworkManager>()));
   instance.registerLazySingleton<CartRepository>(() => CartRepositoryImpl(instance<CartLocalDataSource>()));
   instance.registerLazySingleton<CheckoutRepository>(() => CheckoutRepositoryImpl(instance<CheckoutLocalDataSource>()));
 
@@ -51,6 +56,7 @@ Future<void> initializeDependencies() async {
   instance.registerLazySingleton<SubmitPurchase>(() => SubmitPurchase(instance<CheckoutRepository>()));
 
   /// Blocs instance ***********************************************************
+  instance.registerLazySingleton<ConnectivityBloc>(() => ConnectivityBloc(instance<NetworkManager>())..add(const ConnectivityStarted()));
   instance.registerLazySingleton<ThemeBloc>(() => ThemeBloc(instance<AppPreferences>()));
   instance.registerLazySingleton<CartBloc>(() => CartBloc(instance<LoadCart>(), instance<SaveCart>())..add(const CartRequested()));
   instance.registerFactory<CategoriesBloc>(() => CategoriesBloc(instance<GetCategories>()));

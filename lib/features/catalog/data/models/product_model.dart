@@ -33,6 +33,36 @@ final class ProductModel extends Product {
     return ProductModel(id: id, title: title, brand: brand, price: price, originalPrice: originalPrice, stock: stock, imageUrl: imageUrl, badges: badges, categoryId: categoryId, rating: rating);
   }
 
+  factory ProductModel.fromEntity(Product product) {
+    return ProductModel(
+      id: product.id,
+      title: product.title,
+      brand: product.brand,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      stock: product.stock,
+      imageUrl: product.imageUrl,
+      badges: product.badges,
+      categoryId: product.categoryId,
+      rating: product.rating,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': id,
+      'title': title,
+      'brand': brand,
+      'price': price,
+      'originalPrice': originalPrice,
+      'stock': stock,
+      'image': imageUrl,
+      'badges': badges,
+      'categoryId': categoryId,
+      'rating': rating,
+    };
+  }
+
   static String _readRequiredString(Map<String, dynamic> json, String key) {
     final value = json[key];
     if (value is! String || value.trim().isEmpty) {

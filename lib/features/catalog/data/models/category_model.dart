@@ -20,4 +20,8 @@ final class CategoryModel extends Category {
 
     return CategoryModel(id: id.trim(), name: name.trim(), iconName: iconName.trim());
   }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{'id': id, 'name': name, 'iconName': iconName};
+  }
 }

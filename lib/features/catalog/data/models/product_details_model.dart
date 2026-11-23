@@ -1,5 +1,6 @@
 import '../../domain/entities/product.dart';
 import '../../domain/entities/product_details.dart';
+import 'product_model.dart';
 
 final class ProductDetailsModel extends ProductDetails {
   ProductDetailsModel({required super.product, required super.images, required super.description});
@@ -33,5 +34,19 @@ final class ProductDetailsModel extends ProductDetails {
     }
 
     return ProductDetailsModel(product: product, images: images, description: description.trim());
+  }
+
+  factory ProductDetailsModel.fromCacheJson(Map<String, dynamic> json) {
+    final productJson = json['product'];
+    if (productJson is! Map<String, dynamic>) {
+      throw const FormatException('Cached product details must contain a product.');
+    }
+
+    final product = ProductModel.fromJson(productJson);
+    return ProductDetailsModel.fromJson(json, product: product);
+  }
+
+  Map<String, dynamic> toCacheJson() {
+    return <String, dynamic>{'productId': product.id, 'product': ProductModel.fromEntity(product).toJson(), 'images': images, 'description': description};
   }
 }

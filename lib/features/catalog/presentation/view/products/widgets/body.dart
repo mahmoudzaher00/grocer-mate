@@ -5,20 +5,31 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProductsBloc, ProductsState>(
-      builder: (context, state) {
-        return _buildScrollView(
-          context,
-          filters: state.filters,
-          contentSliver: switch (state) {
-            ProductsInitial() || ProductsLoading() => const _Loading(),
-            ProductsSuccess(:final products, :final hasNextPage) => _ProductsList(products: products, showEndMessage: !hasNextPage),
-            ProductsPageError(:final products) => _ProductsList(products: products),
-            ProductsEmpty() => _Empty(hasActiveFilters: state.filters.hasActiveFilters),
-            ProductsError(:final message) => _Error(message: message),
-          },
-        );
+    return BlocListener<ConnectivityBloc, ConnectivityState>(
+      listenWhen: (previous, current) => previous is ConnectivityOffline && current is ConnectivityOnline,
+      listener: (context, state) {
+        final productsBloc = context.read<ProductsBloc>();
+        if (productsBloc.state is ProductsPageError) {
+          productsBloc.add(const ProductsPageRetried());
+        } else if (productsBloc.state is ProductsError) {
+          productsBloc.add(const ProductsRetried());
+        }
       },
+      child: BlocBuilder<ProductsBloc, ProductsState>(
+        builder: (context, state) {
+          return _buildScrollView(
+            context,
+            filters: state.filters,
+            contentSliver: switch (state) {
+              ProductsInitial() || ProductsLoading() => const _Loading(),
+              ProductsSuccess(:final products, :final hasNextPage) => _ProductsList(products: products, showEndMessage: !hasNextPage),
+              ProductsPageError(:final products) => _ProductsList(products: products),
+              ProductsEmpty() => _Empty(hasActiveFilters: state.filters.hasActiveFilters),
+              ProductsError(:final message) => _Error(message: message),
+            },
+          );
+        },
+      ),
     );
   }
 

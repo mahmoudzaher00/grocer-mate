@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/resources/route_names.dart';
 import '../../../../core/resources/shadow_manager.dart';
+import '../../../../core/blocs/connectivity/bloc.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/utils/extensions/value_extensions.dart';
 import '../../../../core/widgets/buttons/theme_toggle_button.dart';

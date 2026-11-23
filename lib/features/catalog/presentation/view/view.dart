@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../../../core/blocs/connectivity/bloc.dart';
 import '../../../../core/resources/route_names.dart';
 import '../../../../core/resources/shadow_manager.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';

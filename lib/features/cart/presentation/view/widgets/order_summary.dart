@@ -77,7 +77,26 @@ class _OrderSummary extends StatelessWidget {
               emphasize: true,
             ),
             SizedBox(height: 20.h),
-            FilledButton.icon(onPressed: () => _startCheckout(context), icon: const Icon(Icons.shopping_cart_checkout_rounded), label: const Text('Place order')),
+            BlocBuilder<ConnectivityBloc, ConnectivityState>(
+              buildWhen: (previous, current) => previous.runtimeType != current.runtimeType,
+              builder: (context, state) {
+                final isOnline = state is ConnectivityOnline;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    FilledButton.icon(onPressed: isOnline ? () => _startCheckout(context) : null, icon: const Icon(Icons.shopping_cart_checkout_rounded), label: const Text('Place order')),
+                    if (state.isOffline) ...[
+                      SizedBox(height: 8.h),
+                      Text(
+                        'Connect to the internet to place your order.',
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),

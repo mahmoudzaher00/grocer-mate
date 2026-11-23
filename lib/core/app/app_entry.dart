@@ -5,11 +5,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../features/cart/presentation/manager/bloc.dart';
+import '../blocs/connectivity/bloc.dart';
 import '../blocs/theme/bloc.dart';
 import '../resources/route_manager.dart';
 import 'app_constants.dart';
 import 'app_di.dart';
 import 'app_theme.dart';
+import '../widgets/status_views/offline_banner.dart';
 
 class AppEntry extends StatelessWidget {
   const AppEntry({super.key});
@@ -20,6 +22,7 @@ class AppEntry extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
+        BlocProvider<ConnectivityBloc>.value(value: instance<ConnectivityBloc>()),
         BlocProvider<ThemeBloc>.value(value: instance<ThemeBloc>()),
         BlocProvider<CartBloc>.value(value: instance<CartBloc>()),
       ],
@@ -51,7 +54,17 @@ class AppEntry extends StatelessWidget {
                       data: appSkeletonizerConfig.copyWith(brightness: brightness),
                       child: MediaQuery(
                         data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
-                        child: widgets!,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(child: widgets!),
+                            const PositionedDirectional(
+                              top: 0,
+                              start: 0,
+                              end: 0,
+                              child: SafeArea(bottom: false, child: IgnorePointer(child: OfflineBanner())),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

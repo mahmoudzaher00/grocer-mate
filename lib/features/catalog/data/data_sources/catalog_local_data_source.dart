@@ -11,6 +11,8 @@ import '../models/product_page_model.dart';
 abstract interface class CatalogLocalDataSource {
   Future<List<CategoryModel>> getCategories();
 
+  Future<List<ProductModel>> getAllProducts();
+
   Future<List<String>> getBrands({String? categoryId});
 
   Future<ProductDetailsModel> getProductDetails(String productId);
@@ -69,6 +71,11 @@ final class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
   }
 
   @override
+  Future<List<ProductModel>> getAllProducts() async {
+    return List<ProductModel>.unmodifiable(await _loadProducts());
+  }
+
+  @override
   Future<ProductDetailsModel> getProductDetails(String productId) async {
     if (productId.trim().isEmpty) {
       throw const FormatException('Product id must not be empty.');
@@ -117,23 +124,7 @@ final class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
     }
 
     final products = await _loadProducts();
-    final normalizedSearch = searchQuery.trim().toLowerCase();
-    final filteredProducts = products
-        .where((product) {
-          final matchesCategory = categoryId == null || product.categoryId == categoryId;
-          final matchesBrand = brand == null || product.brand == brand;
-          final matchesSearch = normalizedSearch.isEmpty || product.title.toLowerCase().contains(normalizedSearch);
-          return matchesCategory && matchesBrand && matchesSearch;
-        })
-        .toList(growable: false);
-    final startIndex = (page - 1) * pageSize;
-
-    if (startIndex >= filteredProducts.length) {
-      return ProductPageModel(products: const <ProductModel>[], page: page, pageSize: pageSize, total: filteredProducts.length);
-    }
-
-    final endIndex = (startIndex + pageSize).clamp(0, filteredProducts.length);
-    return ProductPageModel(products: filteredProducts.sublist(startIndex, endIndex), page: page, pageSize: pageSize, total: filteredProducts.length);
+    return ProductPageModel.fromProducts(products: products, categoryId: categoryId, brand: brand, searchQuery: searchQuery, page: page, pageSize: pageSize);
   }
 
   Future<List<ProductModel>> _loadProducts() async {
