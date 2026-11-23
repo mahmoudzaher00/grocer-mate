@@ -11,8 +11,8 @@ class CartItem extends Equatable {
   double get lineSubtotal => product.price * quantity;
   double get lineDiscount => (product.originalPrice - product.price) * quantity;
 
-  CartItem copyWith({int? quantity}) {
-    return CartItem(product: product, quantity: quantity ?? this.quantity);
+  CartItem copyWith({Product? product, int? quantity}) {
+    return CartItem(product: product ?? this.product, quantity: quantity ?? this.quantity);
   }
 
   @override

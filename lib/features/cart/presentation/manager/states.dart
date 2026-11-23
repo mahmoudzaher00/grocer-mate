@@ -42,3 +42,12 @@ final class CartActionFailure extends CartState {
   @override
   List<Object?> get props => [...super.props, message];
 }
+
+final class CartActionNotice extends CartState {
+  const CartActionNotice({required Cart cart, required this.message}) : super(cart: cart);
+
+  final String message;
+
+  @override
+  List<Object?> get props => [...super.props, message];
+}

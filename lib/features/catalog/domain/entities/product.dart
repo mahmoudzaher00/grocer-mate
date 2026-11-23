@@ -33,6 +33,21 @@ class Product extends Equatable {
     return (((originalPrice - price) / originalPrice) * 100).round();
   }
 
+  Product copyWith({double? price}) {
+    return Product(
+      id: id,
+      title: title,
+      brand: brand,
+      price: price ?? this.price,
+      originalPrice: originalPrice,
+      stock: stock,
+      imageUrl: imageUrl,
+      badges: badges,
+      categoryId: categoryId,
+      rating: rating,
+    );
+  }
+
   @override
   List<Object?> get props => [id, title, brand, price, originalPrice, stock, imageUrl, badges, categoryId, rating];
 }

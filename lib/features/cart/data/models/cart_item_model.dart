@@ -16,9 +16,6 @@ final class CartItemModel extends CartItem {
     }
 
     final product = ProductModel.fromJson(productJson);
-    if (quantity > product.stock) {
-      throw const FormatException('Cart quantity must not exceed product stock.');
-    }
     return CartItemModel(product: product, quantity: quantity);
   }
 

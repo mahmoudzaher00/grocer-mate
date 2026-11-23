@@ -17,6 +17,11 @@ import '../../features/catalog/domain/use_cases/get_products.dart';
 import '../../features/catalog/presentation/manager/bloc.dart';
 import '../../features/catalog/presentation/manager/product_details/bloc.dart';
 import '../../features/catalog/presentation/manager/products/bloc.dart';
+import '../../features/checkout/data/data_sources/checkout_local_data_source.dart';
+import '../../features/checkout/data/repositories/checkout_repository_impl.dart';
+import '../../features/checkout/domain/repositories/checkout_repository.dart';
+import '../../features/checkout/domain/use_cases/submit_purchase.dart';
+import '../../features/checkout/presentation/manager/bloc.dart';
 import '../blocs/theme/bloc.dart';
 import 'app_prefs.dart';
 
@@ -29,10 +34,12 @@ Future<void> initializeDependencies() async {
   /// Data sources *************************************************************
   instance.registerLazySingleton<CatalogLocalDataSource>(() => CatalogLocalDataSourceImpl(simulatePaginationFailure: kDebugMode));
   instance.registerLazySingleton<CartLocalDataSource>(() => CartLocalDataSourceImpl(instance<AppPreferences>()));
+  instance.registerLazySingleton<CheckoutLocalDataSource>(() => CheckoutLocalDataSourceImpl());
 
   /// Repositories *************************************************************
   instance.registerLazySingleton<CatalogRepository>(() => CatalogRepositoryImpl(instance<CatalogLocalDataSource>()));
   instance.registerLazySingleton<CartRepository>(() => CartRepositoryImpl(instance<CartLocalDataSource>()));
+  instance.registerLazySingleton<CheckoutRepository>(() => CheckoutRepositoryImpl(instance<CheckoutLocalDataSource>()));
 
   /// UseCases *****************************************************************
   instance.registerLazySingleton<LoadCart>(() => LoadCart(instance<CartRepository>()));
@@ -41,6 +48,7 @@ Future<void> initializeDependencies() async {
   instance.registerLazySingleton<GetCategories>(() => GetCategories(instance<CatalogRepository>()));
   instance.registerLazySingleton<GetProductDetails>(() => GetProductDetails(instance<CatalogRepository>()));
   instance.registerLazySingleton<GetProducts>(() => GetProducts(instance<CatalogRepository>()));
+  instance.registerLazySingleton<SubmitPurchase>(() => SubmitPurchase(instance<CheckoutRepository>()));
 
   /// Blocs instance ***********************************************************
   instance.registerLazySingleton<ThemeBloc>(() => ThemeBloc(instance<AppPreferences>()));
@@ -48,4 +56,5 @@ Future<void> initializeDependencies() async {
   instance.registerFactory<CategoriesBloc>(() => CategoriesBloc(instance<GetCategories>()));
   instance.registerFactory<ProductDetailsBloc>(() => ProductDetailsBloc(instance<GetProductDetails>()));
   instance.registerFactory<ProductsBloc>(() => ProductsBloc(instance<GetProducts>(), instance<GetCategories>(), instance<GetBrands>()));
+  instance.registerFactory<CheckoutBloc>(() => CheckoutBloc(instance<SubmitPurchase>()));
 }

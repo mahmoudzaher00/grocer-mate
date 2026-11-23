@@ -1,13 +1,14 @@
 import '../../domain/entities/cart_pricing.dart';
 
 final class CartPricingModel extends CartPricing {
-  const CartPricingModel({required super.taxRate, required super.deliveryFee, required super.freeDeliveryThreshold, required super.currency});
+  const CartPricingModel({required super.taxRate, required super.deliveryFee, required super.freeDeliveryThreshold, required super.currency, required super.enablePriceRevalidation});
 
   factory CartPricingModel.fromJson(Map<String, dynamic> json) {
     final taxRate = _readNonNegativeDouble(json, 'taxRate');
     final deliveryFee = _readNonNegativeDouble(json, 'deliveryFee');
     final freeDeliveryThreshold = _readNonNegativeDouble(json, 'freeDeliveryThreshold');
     final currency = json['currency'];
+    final enablePriceRevalidation = json['enablePriceRevalidation'];
 
     if (taxRate > 1) {
       throw const FormatException('Cart taxRate must not be greater than 1.');
@@ -15,8 +16,17 @@ final class CartPricingModel extends CartPricing {
     if (currency is! String || currency.trim().isEmpty) {
       throw const FormatException('Cart currency must be a non-empty string.');
     }
+    if (enablePriceRevalidation is! bool) {
+      throw const FormatException('Cart enablePriceRevalidation must be a boolean.');
+    }
 
-    return CartPricingModel(taxRate: taxRate, deliveryFee: deliveryFee, freeDeliveryThreshold: freeDeliveryThreshold, currency: currency.trim().toUpperCase());
+    return CartPricingModel(
+      taxRate: taxRate,
+      deliveryFee: deliveryFee,
+      freeDeliveryThreshold: freeDeliveryThreshold,
+      currency: currency.trim().toUpperCase(),
+      enablePriceRevalidation: enablePriceRevalidation,
+    );
   }
 
   static double _readNonNegativeDouble(Map<String, dynamic> json, String key) {

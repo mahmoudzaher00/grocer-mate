@@ -1,0 +1,8 @@
+{
+  "orderId": "o_7101",
+  "products": [
+    {"productId": "p_milk_2pct", "price": 1.39, "stock": 6},
+    {"productId": "p_apple_gala", "price": 2.49, "stock": 0},
+    {"productId": "p_bread_sourdough", "price": 2.79, "stock": 1}
+  ]
+}

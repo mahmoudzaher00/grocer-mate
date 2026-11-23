@@ -1,10 +1,13 @@
 part of '../view.dart';
 
 class _CartItemCard extends StatelessWidget {
-  const _CartItemCard({required this.item, required this.cart});
+  const _CartItemCard({required this.item, required this.cart, required this.isSelected, required this.onSelectionChanged, required this.onSaveForLater});
 
   final CartItem item;
   final Cart cart;
+  final bool isSelected;
+  final ValueChanged<bool> onSelectionChanged;
+  final VoidCallback onSaveForLater;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +39,7 @@ class _CartItemCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Checkbox(value: isSelected, onChanged: (value) => onSelectionChanged(value ?? false), visualDensity: VisualDensity.compact),
                       Expanded(
                         child: InkWell(
                           onTap: () => Navigator.of(context).pushNamed(productDetailsRoute, arguments: product),
@@ -60,7 +64,10 @@ class _CartItemCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(_formatMoney(cart, item.lineSubtotal), style: context.textTheme.titleLarge?.copyWith(color: colorScheme.primary)),
+                        child: Text(
+                          item.lineSubtotal.formatCurrency(currencySymbol: cart.pricing.currencySymbol),
+                          style: context.textTheme.titleLarge?.copyWith(color: colorScheme.primary),
+                        ),
                       ),
                       QuantityStepper(
                         compact: true,
@@ -69,6 +76,10 @@ class _CartItemCard extends StatelessWidget {
                         onChanged: (quantity) => context.read<CartBloc>().add(CartQuantityChanged(productId: product.id, quantity: quantity)),
                       ),
                     ],
+                  ),
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: TextButton.icon(onPressed: onSaveForLater, icon: const Icon(Icons.bookmark_add_outlined), label: const Text('Save for later')),
                   ),
                 ],
               ),

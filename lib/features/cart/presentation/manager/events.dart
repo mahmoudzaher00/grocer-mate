@@ -43,3 +43,30 @@ final class CartItemRemoved extends CartEvent {
   @override
   List<Object?> get props => [productId];
 }
+
+final class CartItemsMovedToSaved extends CartEvent {
+  CartItemsMovedToSaved(Iterable<String> productIds) : productIds = List<String>.unmodifiable(productIds);
+
+  final List<String> productIds;
+
+  @override
+  List<Object?> get props => [productIds];
+}
+
+final class SavedItemsMovedToCart extends CartEvent {
+  SavedItemsMovedToCart(Iterable<String> productIds) : productIds = List<String>.unmodifiable(productIds);
+
+  final List<String> productIds;
+
+  @override
+  List<Object?> get props => [productIds];
+}
+
+final class CartPurchaseCompleted extends CartEvent {
+  CartPurchaseCompleted(Iterable<String> productIds) : productIds = List<String>.unmodifiable(productIds);
+
+  final List<String> productIds;
+
+  @override
+  List<Object?> get props => [productIds];
+}

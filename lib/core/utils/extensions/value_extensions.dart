@@ -107,6 +107,13 @@ extension NullableInt on int? {
   }
 }
 
+/// Formats numeric values with a currency symbol and fixed decimal places.
+extension CurrencyFormatting on num {
+  String formatCurrency({required String currencySymbol, int decimalDigits = 2}) {
+    return '$currencySymbol${toStringAsFixed(decimalDigits)}';
+  }
+}
+
 /// Generates initials from a person's name.
 extension UserInitialsExtension on String {
   String get initials {
