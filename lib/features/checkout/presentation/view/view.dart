@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/app/app_di.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
+import '../../../../core/utils/modal_utils.dart';
 import '../../../../core/widgets/status_views/error_state_widget.dart';
 import '../../../cart/domain/entities/cart.dart';
 import '../../../cart/domain/entities/cart_item.dart';
@@ -37,27 +38,29 @@ Future<CheckoutOutcome?> showCheckoutSheet({required BuildContext context, requi
 }
 
 Future<void> showOrderConfirmationDialog({required BuildContext context, required String orderId, required String totalLabel}) {
-  final colorScheme = context.theme.colorScheme;
-  return showDialog<void>(
+  return showCustomAlertDialog<void>(
     context: context,
     barrierDismissible: false,
-    builder: (dialogContext) => AlertDialog(
-      icon: Icon(Icons.check_circle_rounded, color: colorScheme.secondary, size: 48.r),
-      title: const Text('Order confirmed', textAlign: TextAlign.center),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('Order $orderId was placed successfully.', textAlign: TextAlign.center, style: context.textTheme.bodyLarge),
-          SizedBox(height: 12.h),
-          Text(
-            totalLabel,
-            style: context.textTheme.headlineSmall?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-      actionsAlignment: MainAxisAlignment.center,
-      actions: [FilledButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Done'))],
-    ),
+    builder: (dialogContext) {
+      final colorScheme = dialogContext.theme.colorScheme;
+      return AlertDialog(
+        icon: Icon(Icons.check_circle_rounded, color: colorScheme.secondary, size: 48.r),
+        title: const Text('Order confirmed', textAlign: TextAlign.center),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Order $orderId was placed successfully.', textAlign: TextAlign.center, style: dialogContext.textTheme.bodyLarge),
+            SizedBox(height: 12.h),
+            Text(
+              totalLabel,
+              style: dialogContext.textTheme.headlineSmall?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [FilledButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Done'))],
+      );
+    },
   );
 }
 

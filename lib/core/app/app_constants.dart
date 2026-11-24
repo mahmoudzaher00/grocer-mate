@@ -19,6 +19,8 @@ class AppConstants {
   static const defaultDebounceDuration = Duration(milliseconds: 600);
   static const themeAnimationDuration = Duration(milliseconds: 200);
   static const themeIconAnimationDuration = Duration(milliseconds: 160);
+  static const splashAnimationDuration = Duration(milliseconds: 1400);
+  static const splashNavigationDelay = Duration(milliseconds: 2500);
 
   static const SystemUiOverlayStyle statusBarOnTransparent = SystemUiOverlayStyle(statusBarColor: kTransparent, statusBarIconBrightness: Brightness.dark, statusBarBrightness: Brightness.light);
   static const SystemUiOverlayStyle statusBarOnLightBackground = SystemUiOverlayStyle(
