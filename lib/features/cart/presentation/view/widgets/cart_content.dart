@@ -10,67 +10,97 @@ class _CartContent extends StatefulWidget {
 }
 
 class _CartContentState extends State<_CartContent> {
-  final Set<String> _selectedIds = <String>{};
+  final _selection = _ItemSelection();
 
   @override
   void didUpdateWidget(covariant _CartContent oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final currentIds = widget.cart.items.map((item) => item.product.id).toSet();
-    _selectedIds.removeWhere((id) => !currentIds.contains(id));
+    if (!identical(widget.cart.items, oldWidget.cart.items)) {
+      _selection.retainItems(widget.cart.items);
+    }
   }
 
-  void _toggleSelection(String productId, bool selected) {
-    setState(() => selected ? _selectedIds.add(productId) : _selectedIds.remove(productId));
+  @override
+  void dispose() {
+    _selection.dispose();
+    super.dispose();
   }
 
   void _moveSelected() {
-    context.read<CartBloc>().add(CartItemsMovedToSaved(_selectedIds));
-    setState(_selectedIds.clear);
+    context.read<CartBloc>().add(CartItemsMovedToSaved(_selection.selectedIds));
+    _selection.clear();
+  }
+
+  Future<void> _startCheckout({required bool offline}) async {
+    final cart = await context.read<CartBloc>().cartForCheckout();
+    if (!mounted || cart == null || cart.isEmpty || ModalRoute.of(context)?.isCurrent != true) return;
+    final outbox = context.read<OutboxBloc>();
+    if (outbox.state.hasPendingPurchase || outbox.state.blocksCartMutations) return;
+    final connection = context.read<ConnectivityBloc>().state;
+    if (offline) {
+      if (connection is! ConnectivityOffline) return;
+      outbox.add(OutboxPurchaseQueued(cart));
+      return;
+    }
+    if (connection is! ConnectivityOnline) return;
+
+    final outcome = await showCheckoutSheet(context: context, cart: cart);
+    if (!mounted || outcome == null) return;
+
+    context.read<CartBloc>().add(CartPurchaseCompleted(outcome.purchasedCart));
+    await showOrderConfirmationDialog(
+      context: context,
+      orderId: outcome.orderId,
+      totalLabel: outcome.finalTotal.formatCurrency(currencySymbol: cart.pricing.currencySymbol),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final outboxState = context.watch<OutboxBloc>().state;
-    return ListView(
+    final items = widget.cart.items;
+    return ListView.builder(
       key: const PageStorageKey<String>('cart-scroll-view'),
       padding: EdgeInsetsDirectional.fromSTEB(16.w, 16.h, 16.w, 24.h),
-      children: [
-        Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 760),
+      itemCount: items.length + 2,
+      itemBuilder: (context, index) {
+        final Widget row;
+        if (index == 0) {
+          final header = _SelectionHeader(
+            countLabel: '${widget.cart.itemCount} ${widget.cart.itemCount == 1 ? 'item' : 'items'}',
+            selection: _selection,
+            onPressed: _moveSelected,
+            icon: Icons.bookmark_add_outlined,
+            actionLabel: 'Save selected',
+          );
+          row = Padding(
+            padding: EdgeInsets.only(bottom: 12.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (outboxState.hasPendingPurchase) ...[_QueuedPurchaseCard(state: outboxState), SizedBox(height: 20.h)],
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${widget.cart.itemCount} ${widget.cart.itemCount == 1 ? 'item' : 'items'}',
-                        style: context.textTheme.titleMedium?.copyWith(color: context.theme.colorScheme.onSurface.withValues(alpha: 0.65)),
-                      ),
-                    ),
-                    FilledButton.tonalIcon(onPressed: _selectedIds.isEmpty ? null : _moveSelected, icon: const Icon(Icons.bookmark_add_outlined), label: const Text('Save selected')),
-                  ],
+                BlocBuilder<OutboxBloc, OutboxState>(
+                  builder: (context, state) => state.hasPendingPurchase
+                      ? Padding(
+                          padding: EdgeInsets.only(bottom: 20.h),
+                          child: _QueuedPurchaseCard(state: state),
+                        )
+                      : const SizedBox.shrink(),
                 ),
-                SizedBox(height: 12.h),
-                for (var index = 0; index < widget.cart.items.length; index++) ...[
-                  _CartItemCard(
-                    item: widget.cart.items[index],
-                    cart: widget.cart,
-                    isSelected: _selectedIds.contains(widget.cart.items[index].product.id),
-                    onSelectionChanged: (selected) => _toggleSelection(widget.cart.items[index].product.id, selected),
-                    onSaveForLater: () => context.read<CartBloc>().add(CartItemsMovedToSaved([widget.cart.items[index].product.id])),
-                  ),
-                  if (index != widget.cart.items.length - 1) SizedBox(height: 12.h),
-                ],
-                SizedBox(height: 20.h),
-                _OrderSummary(cart: widget.cart),
+                header,
               ],
             ),
-          ),
-        ),
-      ],
+          );
+        } else if (index == items.length + 1) {
+          row = _OrderSummary(cart: widget.cart, onCheckout: _startCheckout);
+        } else {
+          final item = items[index - 1];
+          final id = item.product.id;
+          row = Padding(
+            padding: EdgeInsets.only(bottom: index == items.length ? 20.h : 12.h),
+            child: _CartItemCard(item: item, cart: widget.cart, selectionControl: _selection.checkboxFor(id), onSaveForLater: () => context.read<CartBloc>().add(CartItemsMovedToSaved([id]))),
+          );
+        }
+        return Center(child: SizedBox(width: 760, child: row));
+      },
     );
   }
 }

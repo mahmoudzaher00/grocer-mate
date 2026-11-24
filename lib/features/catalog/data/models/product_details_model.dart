@@ -6,44 +6,28 @@ final class ProductDetailsModel extends ProductDetails {
   ProductDetailsModel({required super.product, required super.images, required super.description});
 
   factory ProductDetailsModel.fromJson(Map<String, dynamic> json, {required Product product}) {
-    final productId = json['productId'];
-    final description = json['description'];
-    final imagesJson = json['images'];
+    try {
+      if (json['productId'] as String != product.id) {
+        throw const FormatException('Product details must reference the requested product.');
+      }
 
-    if (productId is! String || productId.trim() != product.id) {
-      throw const FormatException('Product details must reference the requested product.');
-    }
-    if (description is! String || description.trim().isEmpty) {
-      throw const FormatException('Product description must be a non-empty string.');
-    }
-    if (imagesJson is! List<dynamic> || imagesJson.isEmpty) {
-      throw const FormatException('Product details must contain at least one image.');
-    }
+      final images = (json['images'] as List<dynamic>).cast<String>();
+      if (images.isEmpty) throw const FormatException('Product details must contain at least one image.');
+      if (images.first != product.imageUrl) throw const FormatException('The first details image must match the catalog image.');
 
-    final images = imagesJson
-        .map((image) {
-          if (image is! String || image.trim().isEmpty) {
-            throw const FormatException('Each product image must be a non-empty string.');
-          }
-          return image.trim();
-        })
-        .toList(growable: false);
-
-    if (images.first != product.imageUrl) {
-      throw const FormatException('The first details image must match the catalog image.');
+      return ProductDetailsModel(product: product, images: images, description: json['description'] as String);
+    } on TypeError catch (error) {
+      throw FormatException('Product details have an invalid structure.', error);
     }
-
-    return ProductDetailsModel(product: product, images: images, description: description.trim());
   }
 
   factory ProductDetailsModel.fromCacheJson(Map<String, dynamic> json) {
-    final productJson = json['product'];
-    if (productJson is! Map<String, dynamic>) {
-      throw const FormatException('Cached product details must contain a product.');
+    try {
+      final product = ProductModel.fromJson(json['product'] as Map<String, dynamic>);
+      return ProductDetailsModel.fromJson(json, product: product);
+    } on TypeError catch (error) {
+      throw FormatException('Cached product details have an invalid structure.', error);
     }
-
-    final product = ProductModel.fromJson(productJson);
-    return ProductDetailsModel.fromJson(json, product: product);
   }
 
   Map<String, dynamic> toCacheJson() {

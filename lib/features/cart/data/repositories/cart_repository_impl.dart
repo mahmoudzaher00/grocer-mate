@@ -17,36 +17,13 @@ final class CartRepositoryImpl implements CartRepository {
   final CartLocalDataSource _localDataSource;
   Future<void> _operationTail = Future<void>.value();
 
-  bool _itemsMatch(List<CartItem> persistedItems, List<CartItem> expectedItems) {
-    if (persistedItems.length != expectedItems.length) return false;
-    for (var index = 0; index < persistedItems.length; index++) {
-      final persistedItem = persistedItems[index];
-      final expectedItem = expectedItems[index];
-      if (persistedItem.product.id != expectedItem.product.id || persistedItem.quantity != expectedItem.quantity) return false;
-    }
-    return true;
-  }
-
-  Future<T> _synchronized<T>(Future<T> Function() operation) async {
-    final previousOperation = _operationTail;
-    final release = Completer<void>();
-    _operationTail = release.future;
-
-    await previousOperation;
-    try {
-      return await operation();
-    } finally {
-      release.complete();
-    }
-  }
-
   @override
   Future<Either<Failure, Cart>> loadCart() {
-    return _synchronized(() async {
+    return _runSequentially(() async {
       try {
         final snapshot = await _localDataSource.loadItems();
         if (snapshot.cartItems.any((item) => item.quantity > item.product.stock)) {
-          throw const FormatException('A cart quantity exceeds available stock.');
+          return const Left(DataFailure('The saved cart data is invalid.'));
         }
         final pricing = await _localDataSource.loadPricing();
         return Right(Cart(items: snapshot.cartItems, savedItems: snapshot.savedItems, pricing: pricing));
@@ -62,14 +39,14 @@ final class CartRepositoryImpl implements CartRepository {
 
   @override
   Future<Either<Failure, Unit>> saveCart({required Cart previousCart, required Cart updatedCart}) {
-    return _synchronized(() async {
+    return _runSequentially(() async {
       try {
         if (updatedCart.items.any((item) => item.quantity > item.product.stock)) {
-          throw const FormatException('A cart quantity exceeds available stock.');
+          return const Left(DataFailure('The cart data is invalid.'));
         }
 
         final snapshot = await _localDataSource.loadItems();
-        if (!_itemsMatch(snapshot.cartItems, previousCart.items) || !_itemsMatch(snapshot.savedItems, previousCart.savedItems)) {
+        if (!_hasMatchingItems(snapshot.cartItems, previousCart.items) || !_hasMatchingItems(snapshot.savedItems, previousCart.savedItems)) {
           return const Left(StorageFailure('The Cart changed while this update was being saved. Please try again.'));
         }
 
@@ -89,10 +66,10 @@ final class CartRepositoryImpl implements CartRepository {
 
   @override
   Future<Either<Failure, Cart>> detachItemsForQueuedPurchase({required String purchaseKey, required List<CartItem> items, Future<Either<Failure, Unit>> Function()? persistPendingPurchase}) {
-    return _synchronized(() async {
+    return _runSequentially(() async {
       try {
         if (purchaseKey.trim().isEmpty || items.isEmpty) {
-          throw const FormatException('Queued purchase detachment data is invalid.');
+          return const Left(DataFailure('The queued purchase could not be detached from Cart.'));
         }
 
         final snapshot = await _localDataSource.loadItems();
@@ -100,43 +77,33 @@ final class CartRepositoryImpl implements CartRepository {
         final currentCart = Cart(items: snapshot.cartItems, savedItems: snapshot.savedItems, pricing: pricing);
         if (snapshot.lastDetachedPurchaseKey == purchaseKey) return Right(currentCart);
 
-        final queuedQuantities = <String, int>{};
+        final quantitiesToDetach = <String, int>{};
         for (final item in items) {
           final productId = item.product.id.trim();
           if (productId.isEmpty || item.quantity < 1) {
-            throw const FormatException('Queued purchase items must have valid products and quantities.');
+            return const Left(DataFailure('The queued purchase could not be detached from Cart.'));
           }
-          queuedQuantities.update(productId, (quantity) => quantity + item.quantity, ifAbsent: () => item.quantity);
+          quantitiesToDetach.update(productId, (quantity) => quantity + item.quantity, ifAbsent: () => item.quantity);
         }
 
-        final cartQuantities = <String, int>{};
+        final remainingItems = <CartItem>[];
         for (final item in currentCart.items) {
-          cartQuantities.update(item.product.id, (quantity) => quantity + item.quantity, ifAbsent: () => item.quantity);
+          final requestedQuantity = quantitiesToDetach[item.product.id] ?? 0;
+          final detachedQuantity = requestedQuantity.clamp(0, item.quantity).toInt();
+          final remainingQuantity = item.quantity - detachedQuantity;
+          quantitiesToDetach[item.product.id] = requestedQuantity - detachedQuantity;
+          if (remainingQuantity > 0) remainingItems.add(item.copyWith(quantity: remainingQuantity));
         }
-        for (final entry in queuedQuantities.entries) {
-          if ((cartQuantities[entry.key] ?? 0) < entry.value) {
-            return const Left(DataFailure('Queued quantities exceed the matching Cart quantities. The Cart was not changed.'));
-          }
+        if (quantitiesToDetach.values.any((quantity) => quantity > 0)) {
+          return const Left(DataFailure('Queued quantities exceed the matching Cart quantities. The Cart was not changed.'));
         }
 
         if (persistPendingPurchase != null) {
-          if (!_itemsMatch(currentCart.items, items)) {
+          if (!_hasMatchingItems(currentCart.items, items)) {
             return const Left(DataFailure('The Cart changed. Review it before queuing your purchase.'));
           }
-          // Keep validation and the durable detachment intent inside the same cart operation.
-          final saved = await persistPendingPurchase();
-          final failure = saved.fold<Failure?>((failure) => failure, (_) => null);
+          final failure = (await persistPendingPurchase()).fold<Failure?>((failure) => failure, (_) => null);
           if (failure != null) return Left(failure);
-        }
-
-        final quantitiesToDetach = Map<String, int>.of(queuedQuantities);
-        final remainingItems = <CartItem>[];
-        for (final item in currentCart.items) {
-          final queuedQuantity = quantitiesToDetach[item.product.id] ?? 0;
-          final detachedQuantity = queuedQuantity.clamp(0, item.quantity).toInt();
-          final remainingQuantity = item.quantity - detachedQuantity;
-          quantitiesToDetach[item.product.id] = queuedQuantity - detachedQuantity;
-          if (remainingQuantity > 0) remainingItems.add(item.copyWith(quantity: remainingQuantity));
         }
 
         final cartItems = remainingItems.map(CartItemModel.fromEntity).toList(growable: false);
@@ -152,5 +119,29 @@ final class CartRepositoryImpl implements CartRepository {
         return const Left(StorageFailure('The queued purchase could not update Cart storage.'));
       }
     });
+  }
+
+  bool _hasMatchingItems(List<CartItem> persistedItems, List<CartItem> expectedItems) {
+    if (persistedItems.length != expectedItems.length) return false;
+
+    for (int index = 0; index < persistedItems.length; index++) {
+      final persistedItem = persistedItems[index];
+      final expectedItem = expectedItems[index];
+      if (persistedItem.product.id != expectedItem.product.id || persistedItem.quantity != expectedItem.quantity) return false;
+    }
+    return true;
+  }
+
+  Future<T> _runSequentially<T>(Future<T> Function() operation) async {
+    final previousOperation = _operationTail;
+    final release = Completer<void>();
+    _operationTail = release.future;
+
+    await previousOperation;
+    try {
+      return await operation();
+    } finally {
+      release.complete();
+    }
   }
 }

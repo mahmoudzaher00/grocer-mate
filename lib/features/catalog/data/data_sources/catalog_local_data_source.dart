@@ -36,32 +36,18 @@ final class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
 
   @override
   Future<List<CategoryModel>> getCategories() async {
-    final jsonString = await _assetBundle.loadString(JsonAssets.categories);
-    final decodedJson = jsonDecode(jsonString);
-
-    if (decodedJson is! Map<String, dynamic>) {
-      throw const FormatException('Categories fixture must be a JSON object.');
+    try {
+      final decodedJson = jsonDecode(await _assetBundle.loadString(JsonAssets.categories)) as Map<String, dynamic>;
+      return (decodedJson['categories'] as List<dynamic>).cast<Map<String, dynamic>>().map(CategoryModel.fromJson).toList(growable: false);
+    } on TypeError catch (error) {
+      throw FormatException('Categories fixture has an invalid structure.', error);
     }
-
-    final categoriesJson = decodedJson['categories'];
-    if (categoriesJson is! List<dynamic>) {
-      throw const FormatException('Categories fixture must contain a list.');
-    }
-
-    return categoriesJson
-        .map((categoryJson) {
-          if (categoryJson is! Map<String, dynamic>) {
-            throw const FormatException('Each category must be a JSON object.');
-          }
-          return CategoryModel.fromJson(categoryJson);
-        })
-        .toList(growable: false);
   }
 
   @override
   Future<List<String>> getBrands({String? categoryId}) async {
     if (categoryId != null && categoryId.trim().isEmpty) {
-      throw const FormatException('Category id must not be empty.');
+      throw ArgumentError.value(categoryId, 'categoryId', 'must not be empty');
     }
 
     final products = await _loadProducts();
@@ -78,7 +64,7 @@ final class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
   @override
   Future<ProductDetailsModel> getProductDetails(String productId) async {
     if (productId.trim().isEmpty) {
-      throw const FormatException('Product id must not be empty.');
+      throw ArgumentError.value(productId, 'productId', 'must not be empty');
     }
 
     if (productResponseDelay > Duration.zero) {
@@ -105,14 +91,13 @@ final class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
   @override
   Future<ProductPageModel> getProducts({required int page, required int pageSize, String? categoryId, String? brand, String searchQuery = ''}) async {
     if (categoryId != null && categoryId.trim().isEmpty) {
-      throw const FormatException('Category id must not be empty.');
+      throw ArgumentError.value(categoryId, 'categoryId', 'must not be empty');
     }
     if (brand != null && brand.trim().isEmpty) {
-      throw const FormatException('Brand must not be empty.');
+      throw ArgumentError.value(brand, 'brand', 'must not be empty');
     }
-    if (page <= 0 || pageSize <= 0) {
-      throw const FormatException('Page and page size must be positive.');
-    }
+    if (page <= 0) throw ArgumentError.value(page, 'page', 'must be positive');
+    if (pageSize <= 0) throw ArgumentError.value(pageSize, 'pageSize', 'must be positive');
 
     if (productResponseDelay > Duration.zero) {
       await Future<void>.delayed(productResponseDelay);
@@ -131,71 +116,46 @@ final class CatalogLocalDataSourceImpl implements CatalogLocalDataSource {
     final cachedProducts = _cachedProducts;
     if (cachedProducts != null) return cachedProducts;
 
-    final jsonString = await _assetBundle.loadString(JsonAssets.products);
-    final decodedJson = jsonDecode(jsonString);
+    try {
+      final decodedJson = jsonDecode(await _assetBundle.loadString(JsonAssets.products)) as Map<String, dynamic>;
+      final productIds = <String>{};
+      final products = (decodedJson['products'] as List<dynamic>)
+          .cast<Map<String, dynamic>>()
+          .map((productJson) {
+            final product = ProductModel.fromJson(productJson);
+            if (!productIds.add(product.id)) throw FormatException('Duplicate product id: ${product.id}.');
+            return product;
+          })
+          .toList(growable: false);
 
-    if (decodedJson is! Map<String, dynamic>) {
-      throw const FormatException('Products fixture must be a JSON object.');
+      _cachedProducts = products;
+      return products;
+    } on TypeError catch (error) {
+      throw FormatException('Products fixture has an invalid structure.', error);
     }
-
-    final productsJson = decodedJson['products'];
-    if (productsJson is! List<dynamic>) {
-      throw const FormatException('Products fixture must contain a list.');
-    }
-
-    final productIds = <String>{};
-    final products = productsJson
-        .map((productJson) {
-          if (productJson is! Map<String, dynamic>) {
-            throw const FormatException('Each product must be a JSON object.');
-          }
-
-          final product = ProductModel.fromJson(productJson);
-          if (!productIds.add(product.id)) {
-            throw FormatException('Duplicate product id: ${product.id}.');
-          }
-          return product;
-        })
-        .toList(growable: false);
-
-    _cachedProducts = products;
-    return products;
   }
 
   Future<Map<String, Map<String, dynamic>>> _loadProductDetails() async {
     final cachedProductDetails = _cachedProductDetails;
     if (cachedProductDetails != null) return cachedProductDetails;
 
-    final jsonString = await _assetBundle.loadString(JsonAssets.productDetails);
-    final decodedJson = jsonDecode(jsonString);
-
-    if (decodedJson is! Map<String, dynamic>) {
-      throw const FormatException('Product details fixture must be a JSON object.');
-    }
-
-    final detailsJson = decodedJson['productDetails'];
-    if (detailsJson is! List<dynamic>) {
-      throw const FormatException('Product details fixture must contain a list.');
-    }
-
-    final detailsByProductId = <String, Map<String, dynamic>>{};
-    for (final detailJson in detailsJson) {
-      if (detailJson is! Map<String, dynamic>) {
-        throw const FormatException('Each product details entry must be a JSON object.');
+    try {
+      final decodedJson = jsonDecode(await _assetBundle.loadString(JsonAssets.productDetails)) as Map<String, dynamic>;
+      final detailsJson = (decodedJson['productDetails'] as List<dynamic>).cast<Map<String, dynamic>>();
+      final detailsByProductId = <String, Map<String, dynamic>>{};
+      for (final detailJson in detailsJson) {
+        final productId = detailJson['productId'] as String;
+        if (productId.trim().isEmpty) throw const FormatException('Each product details entry must contain a product id.');
+        if (detailsByProductId.containsKey(productId)) throw FormatException('Duplicate product details id: $productId.');
+        detailsByProductId[productId] = detailJson;
       }
 
-      final productId = detailJson['productId'];
-      if (productId is! String || productId.trim().isEmpty) {
-        throw const FormatException('Each product details entry must contain a product id.');
-      }
-      if (detailsByProductId.containsKey(productId)) {
-        throw FormatException('Duplicate product details id: $productId.');
-      }
-      detailsByProductId[productId] = detailJson;
+      final productDetails = Map<String, Map<String, dynamic>>.unmodifiable(detailsByProductId);
+      _cachedProductDetails = productDetails;
+      return productDetails;
+    } on TypeError catch (error) {
+      throw FormatException('Product details fixture has an invalid structure.', error);
     }
-
-    _cachedProductDetails = Map<String, Map<String, dynamic>>.unmodifiable(detailsByProductId);
-    return _cachedProductDetails!;
   }
 }
 

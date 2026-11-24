@@ -12,7 +12,7 @@ import '../../../../../core/widgets/buttons/theme_toggle_button.dart';
 import '../../../../../core/widgets/images/network_image_widget.dart';
 import '../../../../../core/widgets/status_views/empty_state_widget.dart';
 import '../../../../../core/widgets/status_views/error_state_widget.dart';
-import '../../../../cart/presentation/widgets/cart_button.dart';
+import '../../../../cart/presentation/view/widgets/cart_button.dart';
 import '../../../domain/entities/product.dart';
 import '../../manager/products/bloc.dart';
 import '../../widgets/product_discount_badge.dart';

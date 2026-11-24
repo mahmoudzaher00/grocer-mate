@@ -14,40 +14,35 @@ final class CartPricingModel extends CartPricing {
   }
 
   factory CartPricingModel.fromJson(Map<String, dynamic> json) {
-    final taxRate = _readNonNegativeDouble(json, 'taxRate');
-    final deliveryFee = _readNonNegativeDouble(json, 'deliveryFee');
-    final freeDeliveryThreshold = _readNonNegativeDouble(json, 'freeDeliveryThreshold');
-    final currency = json['currency'];
-    final enablePriceRevalidation = json['enablePriceRevalidation'];
+    try {
+      final taxRate = _readNonNegativeDouble(json, 'taxRate');
+      final deliveryFee = _readNonNegativeDouble(json, 'deliveryFee');
+      final freeDeliveryThreshold = _readNonNegativeDouble(json, 'freeDeliveryThreshold');
+      final currency = json['currency'] as String;
+      final enablePriceRevalidation = json['enablePriceRevalidation'] as bool;
 
-    if (taxRate > 1) {
-      throw const FormatException('Cart taxRate must not be greater than 1.');
-    }
-    if (currency is! String || currency.trim().isEmpty) {
-      throw const FormatException('Cart currency must be a non-empty string.');
-    }
-    if (enablePriceRevalidation is! bool) {
-      throw const FormatException('Cart enablePriceRevalidation must be a boolean.');
-    }
+      if (taxRate > 1) throw const FormatException('Cart taxRate must not be greater than 1.');
+      if (currency.isEmpty) throw const FormatException('Cart currency must be a non-empty string.');
 
-    return CartPricingModel(
-      taxRate: taxRate,
-      deliveryFee: deliveryFee,
-      freeDeliveryThreshold: freeDeliveryThreshold,
-      currency: currency.trim().toUpperCase(),
-      enablePriceRevalidation: enablePriceRevalidation,
-    );
-  }
-
-  static double _readNonNegativeDouble(Map<String, dynamic> json, String key) {
-    final value = json[key];
-    if (value is! num || !value.isFinite || value < 0) {
-      throw FormatException('Cart $key must be a non-negative number.');
+      return CartPricingModel(
+        taxRate: taxRate,
+        deliveryFee: deliveryFee,
+        freeDeliveryThreshold: freeDeliveryThreshold,
+        currency: currency.toUpperCase(),
+        enablePriceRevalidation: enablePriceRevalidation,
+      );
+    } on TypeError catch (error) {
+      throw FormatException('Cart pricing has an invalid structure.', error);
     }
-    return value.toDouble();
   }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{'taxRate': taxRate, 'deliveryFee': deliveryFee, 'freeDeliveryThreshold': freeDeliveryThreshold, 'currency': currency, 'enablePriceRevalidation': enablePriceRevalidation};
+  }
+
+  static double _readNonNegativeDouble(Map<String, dynamic> json, String key) {
+    final value = json[key] as num;
+    if (!value.isFinite || value < 0) throw FormatException('Cart $key must be a non-negative number.');
+    return value.toDouble();
   }
 }

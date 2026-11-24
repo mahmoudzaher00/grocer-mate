@@ -84,7 +84,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (updatedQuantity == existingQuantity) return;
 
     final items = <CartItem>[];
-    var didReplace = false;
+    bool didReplace = false;
     for (final item in cart.items) {
       if (item.product.id == event.product.id) {
         items.add(CartItem(product: event.product, quantity: updatedQuantity));
@@ -133,7 +133,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
     final remainingCartItems = <CartItem>[];
     final savedItemsById = <String, CartItem>{for (final item in cart.savedItems) item.product.id: item};
-    var didMoveItem = false;
+    bool didMoveItem = false;
 
     for (final item in cart.items) {
       if (!selectedIds.contains(item.product.id)) {
@@ -157,10 +157,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (cart == null || selectedIds.isEmpty) return;
 
     final cartItems = List<CartItem>.of(cart.items);
-    final cartIndexes = <String, int>{for (var index = 0; index < cartItems.length; index++) cartItems[index].product.id: index};
+    final cartIndexes = <String, int>{for (int index = 0; index < cartItems.length; index++) cartItems[index].product.id: index};
     final remainingSavedItems = <CartItem>[];
-    var didMoveQuantity = false;
-    var didReachStockLimit = false;
+    bool didMoveQuantity = false;
+    bool didReachStockLimit = false;
 
     for (final savedItem in cart.savedItems) {
       if (!selectedIds.contains(savedItem.product.id)) {

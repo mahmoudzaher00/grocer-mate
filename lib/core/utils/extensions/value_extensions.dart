@@ -5,9 +5,9 @@ const List<String> _arabicDigits = <String>['٠', '١', '٢', '٣', '٤', '٥', 
 const String _dash = '-';
 
 String _convertDigits({required String value, required List<String> sourceDigits, required List<String> targetDigits}) {
-  var result = value;
+  String result = value;
 
-  for (var index = 0; index < sourceDigits.length; index++) {
+  for (int index = 0; index < sourceDigits.length; index++) {
     result = result.replaceAll(sourceDigits[index], targetDigits[index]);
   }
 

@@ -59,8 +59,6 @@ linter:
 
 
 analyzer:
-  plugins:
-    - dart_code_metrics
   errors:
     dead_code: info
     avoid_print: error
@@ -75,22 +73,3 @@ analyzer:
     - build/**
     - android/**
     - ios/**
-
-dart_code_metrics:
-  metrics:
-    cyclomatic-complexity: 20
-    number-of-arguments: 8
-    lines-of-code: 100
-    source-lines-of-code: 70
-    number-of-methods: 20
-
-  metrics-exclude:
-    - test/**
-
-rules:
-  prefer-trailing-comma:
-    severity: style
-  no-boolean-literal-compare: true
-  no-empty-block:
-    severity: warning
-

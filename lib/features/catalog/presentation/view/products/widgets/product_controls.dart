@@ -1,9 +1,11 @@
 part of '../view.dart';
 
 class _ProductControls extends StatelessWidget {
-  const _ProductControls({required this.filters});
+  const _ProductControls({required this.filters, required this.searchController, required this.onClear});
 
   final ProductsFilters filters;
+  final TextEditingController searchController;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class _ProductControls extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _ProductSearchField(query: filters.searchQuery),
+              _ProductSearchField(controller: searchController),
               SizedBox(height: 10.h),
               Row(
                 children: [
@@ -32,7 +34,7 @@ class _ProductControls extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (filters.hasActiveFilters) ...[SizedBox(width: 4.w), TextButton(onPressed: () => context.read<ProductsBloc>().add(const ProductsFiltersCleared()), child: const Text('Clear'))],
+                  if (filters.hasActiveFilters) ...[SizedBox(width: 4.w), TextButton(onPressed: onClear, child: const Text('Clear'))],
                 ],
               ),
             ],

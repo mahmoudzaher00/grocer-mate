@@ -29,11 +29,14 @@ class _ShoppingListsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final canPop = Navigator.of(context).canPop();
-    final outboxState = context.watch<OutboxBloc>().state;
 
     return TabBarView(
       children: [
-        cart.isEmpty ? _EmptyCartContent(outboxState: outboxState, canPop: canPop) : _CartContent(cart: cart),
+        cart.isEmpty
+            ? BlocBuilder<OutboxBloc, OutboxState>(
+                builder: (context, state) => _EmptyCartContent(outboxState: state, canPop: canPop),
+              )
+            : _CartContent(cart: cart),
         cart.savedItems.isEmpty
             ? const EmptyStateWidget(icon: Icons.bookmark_outline_rounded, title: 'Nothing saved yet', message: 'Move Cart items here to keep them for later.')
             : _SavedContent(cart: cart),

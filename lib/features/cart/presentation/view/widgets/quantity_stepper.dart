@@ -1,7 +1,7 @@
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../core/utils/extensions/context_extensions.dart';
+import '../../../../../core/utils/extensions/context_extensions.dart';
 
 class QuantityStepper extends StatelessWidget {
   const QuantityStepper({required this.quantity, required this.onStep, required this.maximum, this.minimum = 1, this.compact = false, super.key});

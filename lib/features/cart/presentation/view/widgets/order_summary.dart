@@ -1,33 +1,10 @@
 part of '../view.dart';
 
 class _OrderSummary extends StatelessWidget {
-  const _OrderSummary({required this.cart});
+  const _OrderSummary({required this.cart, required this.onCheckout});
 
   final Cart cart;
-
-  Future<void> _startCheckout(BuildContext context, {required bool offline}) async {
-    final cart = await context.read<CartBloc>().cartForCheckout();
-    if (!context.mounted || cart == null || cart.isEmpty || ModalRoute.of(context)?.isCurrent != true) return;
-    final outbox = context.read<OutboxBloc>();
-    if (outbox.state.hasPendingPurchase || outbox.state.blocksCartMutations) return;
-    final connection = context.read<ConnectivityBloc>().state;
-    if (offline) {
-      if (connection is! ConnectivityOffline) return;
-      outbox.add(OutboxPurchaseQueued(cart));
-      return;
-    }
-    if (connection is! ConnectivityOnline) return;
-
-    final outcome = await showCheckoutSheet(context: context, cart: cart);
-    if (!context.mounted || outcome == null) return;
-
-    context.read<CartBloc>().add(CartPurchaseCompleted(outcome.purchasedCart));
-    await showOrderConfirmationDialog(
-      context: context,
-      orderId: outcome.orderId,
-      totalLabel: outcome.finalTotal.formatCurrency(currencySymbol: cart.pricing.currencySymbol),
-    );
-  }
+  final Future<void> Function({required bool offline}) onCheckout;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +80,7 @@ class _OrderSummary extends StatelessWidget {
                       : isOffline
                       ? 'Buy offline'
                       : 'Checking connection';
-                  final onPressed = !hasPendingPurchase && (isOnline || isOffline) ? () => _startCheckout(context, offline: isOffline) : null;
+                  final onPressed = !hasPendingPurchase && (isOnline || isOffline) ? () => onCheckout(offline: isOffline) : null;
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,

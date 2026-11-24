@@ -1,12 +1,11 @@
 part of '../view.dart';
 
 class _CartItemCard extends StatelessWidget {
-  const _CartItemCard({required this.item, required this.cart, required this.isSelected, required this.onSelectionChanged, required this.onSaveForLater});
+  const _CartItemCard({required this.item, required this.cart, required this.selectionControl, required this.onSaveForLater});
 
   final CartItem item;
   final Cart cart;
-  final bool isSelected;
-  final ValueChanged<bool> onSelectionChanged;
+  final Widget selectionControl;
   final VoidCallback onSaveForLater;
 
   @override
@@ -44,7 +43,7 @@ class _CartItemCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Checkbox(value: isSelected, onChanged: (value) => onSelectionChanged(value ?? false), visualDensity: VisualDensity.compact),
+                      selectionControl,
                       Expanded(
                         child: InkWell(
                           onTap: () => Navigator.of(context).pushNamed(productDetailsRoute, arguments: product),

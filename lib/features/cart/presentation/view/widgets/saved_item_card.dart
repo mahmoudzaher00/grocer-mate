@@ -1,12 +1,11 @@
 part of '../view.dart';
 
 class _SavedItemCard extends StatelessWidget {
-  const _SavedItemCard({required this.item, required this.cart, required this.isSelected, required this.onSelectionChanged, required this.onMoveToCart});
+  const _SavedItemCard({required this.item, required this.cart, required this.selectionControl, required this.onMoveToCart});
 
   final CartItem item;
   final Cart cart;
-  final bool isSelected;
-  final ValueChanged<bool> onSelectionChanged;
+  final Widget selectionControl;
   final VoidCallback onMoveToCart;
 
   @override
@@ -35,7 +34,7 @@ class _SavedItemCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Checkbox(value: isSelected, onChanged: (value) => onSelectionChanged(value ?? false), visualDensity: VisualDensity.compact),
+                      selectionControl,
                       Expanded(
                         child: Text(product.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: context.textTheme.titleMedium),
                       ),

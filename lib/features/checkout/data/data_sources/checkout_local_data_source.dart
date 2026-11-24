@@ -99,14 +99,14 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
     final cachedValue = await _preferences.getString(key: _checkoutReceiptPreferencesKey);
     if (cachedValue == null) return null;
 
-    final decoded = jsonDecode(cachedValue);
-    if (decoded is! Map<String, dynamic>) throw const FormatException('Cached checkout receipt must be an object.');
-    final cachedKey = decoded['idempotencyKey'];
-    final response = decoded['response'];
-    if (cachedKey is! String || response is! Map<String, dynamic>) {
-      throw const FormatException('Cached checkout receipt is invalid.');
+    try {
+      final decoded = jsonDecode(cachedValue) as Map<String, dynamic>;
+      final cachedKey = decoded['idempotencyKey'] as String;
+      final response = decoded['response'] as Map<String, dynamic>;
+      return cachedKey == idempotencyKey ? response : null;
+    } on TypeError catch (error) {
+      throw FormatException('Cached checkout receipt has an invalid structure.', error);
     }
-    return cachedKey == idempotencyKey ? response : null;
   }
 
   Future<void> _saveIdempotentResponse(String idempotencyKey, Map<String, dynamic> response) async {
@@ -119,27 +119,28 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
     final cachedFixture = _cachedFixture;
     if (cachedFixture != null) return cachedFixture;
 
-    final jsonString = await _assetBundle.loadString(JsonAssets.purchase);
-    final decoded = jsonDecode(jsonString);
-    if (decoded is! Map<String, dynamic>) throw const FormatException('Checkout fixture must be an object.');
-
-    final fixture = CheckoutFixtureModel.fromJson(decoded);
-    _cachedFixture = fixture;
-    return fixture;
+    try {
+      final decoded = jsonDecode(await _assetBundle.loadString(JsonAssets.purchase)) as Map<String, dynamic>;
+      final fixture = CheckoutFixtureModel.fromJson(decoded);
+      _cachedFixture = fixture;
+      return fixture;
+    } on TypeError catch (error) {
+      throw FormatException('Checkout fixture has an invalid structure.', error);
+    }
   }
 
   Future<Map<String, CheckoutProductSnapshotModel>> _loadCatalogProducts() async {
-    final decoded = jsonDecode(await _assetBundle.loadString(JsonAssets.products));
-    if (decoded is! Map<String, dynamic> || decoded['products'] is! List<dynamic>) {
-      throw const FormatException('Products fixture must contain a list.');
+    try {
+      final decoded = jsonDecode(await _assetBundle.loadString(JsonAssets.products)) as Map<String, dynamic>;
+      final productValues = (decoded['products'] as List<dynamic>).cast<Map<String, dynamic>>();
+      final products = <String, CheckoutProductSnapshotModel>{};
+      for (final value in productValues) {
+        final product = ProductModel.fromJson(value);
+        products[product.id] = CheckoutProductSnapshotModel(productId: product.id, price: product.price, stock: product.stock);
+      }
+      return products;
+    } on TypeError catch (error) {
+      throw FormatException('Products fixture has an invalid structure.', error);
     }
-
-    final products = <String, CheckoutProductSnapshotModel>{};
-    for (final value in decoded['products'] as List<dynamic>) {
-      if (value is! Map<String, dynamic>) throw const FormatException('Each product must be an object.');
-      final product = ProductModel.fromJson(value);
-      products[product.id] = CheckoutProductSnapshotModel(productId: product.id, price: product.price, stock: product.stock);
-    }
-    return products;
   }
 }

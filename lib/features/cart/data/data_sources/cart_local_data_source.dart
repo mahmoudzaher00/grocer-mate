@@ -9,10 +9,10 @@ import '../models/cart_pricing_model.dart';
 
 const String _cartPreferencesKey = 'GROCER_MATE_CART';
 
-typedef CartItemsSnapshot = ({List<CartItemModel> cartItems, List<CartItemModel> savedItems, String? lastDetachedPurchaseKey});
+typedef StoredCartData = ({List<CartItemModel> cartItems, List<CartItemModel> savedItems, String? lastDetachedPurchaseKey});
 
 abstract interface class CartLocalDataSource {
-  Future<CartItemsSnapshot> loadItems();
+  Future<StoredCartData> loadItems();
 
   Future<CartPricingModel> loadPricing();
 
@@ -25,51 +25,37 @@ final class CartLocalDataSourceImpl implements CartLocalDataSource {
   final AppPreferences _preferences;
   final AssetBundle _assetBundle;
 
-  /// Api & Request ************************************************************
-
   @override
-  Future<CartItemsSnapshot> loadItems() async {
+  Future<StoredCartData> loadItems() async {
     final cachedValue = await _preferences.getString(key: _cartPreferencesKey);
     if (cachedValue == null) return (cartItems: const <CartItemModel>[], savedItems: const <CartItemModel>[], lastDetachedPurchaseKey: null);
 
-    final decoded = jsonDecode(cachedValue);
-    if (decoded is List<dynamic>) {
-      return (cartItems: _decodeItems(decoded, 'cart'), savedItems: const <CartItemModel>[], lastDetachedPurchaseKey: null);
-    }
-    if (decoded is! Map<String, dynamic>) {
-      throw const FormatException('Cached shopping lists must be an object.');
-    }
-    final cartItems = decoded['cartItems'];
-    final savedItems = decoded['savedItems'];
-    final lastDetachedPurchaseKey = decoded['lastDetachedPurchaseKey'];
-    if (cartItems is! List<dynamic> || savedItems is! List<dynamic>) {
-      throw const FormatException('Cached cart and saved items must be lists.');
-    }
-    if (lastDetachedPurchaseKey != null && (lastDetachedPurchaseKey is! String || lastDetachedPurchaseKey.trim().isEmpty)) {
-      throw const FormatException('The detached purchase key must be a non-empty string.');
-    }
-    return (cartItems: _decodeItems(cartItems, 'cart'), savedItems: _decodeItems(savedItems, 'saved'), lastDetachedPurchaseKey: lastDetachedPurchaseKey as String?);
-  }
+    try {
+      final decoded = jsonDecode(cachedValue);
+      if (decoded is List<dynamic>) {
+        return (cartItems: _decodeItems(decoded), savedItems: const <CartItemModel>[], lastDetachedPurchaseKey: null);
+      }
 
-  List<CartItemModel> _decodeItems(List<dynamic> values, String listName) {
-    return values
-        .map((item) {
-          if (item is! Map<String, dynamic>) {
-            throw FormatException('Each $listName item must be an object.');
-          }
-          return CartItemModel.fromJson(item);
-        })
-        .toList(growable: false);
+      final storedData = decoded as Map<String, dynamic>;
+      final lastDetachedPurchaseKey = storedData['lastDetachedPurchaseKey'] as String?;
+      if (lastDetachedPurchaseKey != null && lastDetachedPurchaseKey.trim().isEmpty) {
+        throw const FormatException('The detached purchase key must be a non-empty string.');
+      }
+
+      return (cartItems: _decodeItems(storedData['cartItems'] as List<dynamic>), savedItems: _decodeItems(storedData['savedItems'] as List<dynamic>), lastDetachedPurchaseKey: lastDetachedPurchaseKey);
+    } on TypeError catch (error) {
+      throw FormatException('Cached shopping lists have an invalid structure.', error);
+    }
   }
 
   @override
   Future<CartPricingModel> loadPricing() async {
     final jsonString = await _assetBundle.loadString(JsonAssets.flags);
-    final decoded = jsonDecode(jsonString);
-    if (decoded is! Map<String, dynamic>) {
-      throw const FormatException('Cart flags must be an object.');
+    try {
+      return CartPricingModel.fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
+    } on TypeError catch (error) {
+      throw FormatException('Cart flags have an invalid structure.', error);
     }
-    return CartPricingModel.fromJson(decoded);
   }
 
   @override
@@ -81,5 +67,9 @@ final class CartLocalDataSourceImpl implements CartLocalDataSource {
     });
     final didSave = await _preferences.setString(value: encoded, key: _cartPreferencesKey);
     if (!didSave) throw StateError('The shopping lists could not be saved.');
+  }
+
+  List<CartItemModel> _decodeItems(List<dynamic> values) {
+    return values.cast<Map<String, dynamic>>().map(CartItemModel.fromJson).toList(growable: false);
   }
 }

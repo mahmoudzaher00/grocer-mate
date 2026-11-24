@@ -6,6 +6,7 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OutboxBloc, OutboxState>(
+      buildWhen: (previous, current) => previous.blocksCartMutations || current.blocksCartMutations,
       listenWhen: (previous, current) => current is OutboxQueueFailure && previous != current,
       listener: (context, state) {
         if (state case OutboxQueueFailure(:final message)) {

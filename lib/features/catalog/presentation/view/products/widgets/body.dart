@@ -1,7 +1,25 @@
 part of '../view.dart';
 
-class _Body extends StatelessWidget {
+class _Body extends StatefulWidget {
   const _Body();
+
+  @override
+  State<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<_Body> {
+  late final _searchController = TextEditingController(text: context.read<ProductsBloc>().state.filters.searchQuery);
+
+  void _clearFilters() {
+    _searchController.clear();
+    context.read<ProductsBloc>().add(const ProductsFiltersCleared());
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +42,7 @@ class _Body extends StatelessWidget {
               ProductsInitial() || ProductsLoading() => const _Loading(),
               ProductsSuccess(:final products, :final hasNextPage) => _ProductsList(products: products, showEndMessage: !hasNextPage),
               ProductsPageError(:final products) => _ProductsList(products: products),
-              ProductsEmpty() => _Empty(hasActiveFilters: state.filters.hasActiveFilters),
+              ProductsEmpty() => _Empty(hasActiveFilters: state.filters.hasActiveFilters, onClear: _clearFilters),
               ProductsError(:final message) => _Error(message: message),
             },
           );
@@ -45,7 +63,7 @@ class _Body extends StatelessWidget {
         key: const PageStorageKey<String>('products-scroll-view'),
         slivers: [
           const _ProductsSliverAppBar(title: 'Products'),
-          _ProductControls(filters: filters),
+          _ProductControls(filters: filters, searchController: _searchController, onClear: _clearFilters),
           contentSliver,
           const _PaginationFooter(),
         ],

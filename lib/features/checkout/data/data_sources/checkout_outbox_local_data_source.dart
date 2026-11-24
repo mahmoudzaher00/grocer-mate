@@ -23,9 +23,11 @@ final class CheckoutOutboxLocalDataSourceImpl implements CheckoutOutboxLocalData
     final cachedValue = await _preferences.getString(key: _checkoutOutboxPreferencesKey);
     if (cachedValue == null) return null;
 
-    final decoded = jsonDecode(cachedValue);
-    if (decoded is! Map<String, dynamic>) throw const FormatException('Cached queued purchase must be an object.');
-    return QueuedPurchaseModel.fromJson(decoded);
+    try {
+      return QueuedPurchaseModel.fromJson(jsonDecode(cachedValue) as Map<String, dynamic>);
+    } on TypeError catch (error) {
+      throw FormatException('Cached queued purchase has an invalid structure.', error);
+    }
   }
 
   @override

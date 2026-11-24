@@ -18,46 +18,24 @@ final class QueuedPurchaseModel {
   }
 
   factory QueuedPurchaseModel.fromJson(Map<String, dynamic> json) {
-    final idempotencyKey = json['idempotencyKey'];
-    final itemValues = json['items'];
-    final pricingValue = json['pricing'];
-    final createdAtValue = json['createdAt'];
-    final phaseValue = json['phase'];
-
-    if (idempotencyKey is! String || idempotencyKey.trim().isEmpty) {
-      throw const FormatException('Queued purchase idempotencyKey must be a non-empty string.');
-    }
-    if (itemValues is! List<dynamic> || itemValues.isEmpty) {
-      throw const FormatException('Queued purchase items must be a non-empty list.');
-    }
-    if (pricingValue is! Map<String, dynamic>) {
-      throw const FormatException('Queued purchase pricing must be an object.');
-    }
-    if (createdAtValue is! String) {
-      throw const FormatException('Queued purchase createdAt must be a string.');
-    }
-    if (phaseValue is! String) {
-      throw const FormatException('Queued purchase phase must be a string.');
-    }
-
-    final createdAt = DateTime.tryParse(createdAtValue);
-    if (createdAt == null) throw const FormatException('Queued purchase createdAt is invalid.');
-
-    final QueuedPurchasePhase phase;
     try {
-      phase = QueuedPurchasePhase.values.byName(phaseValue);
+      final idempotencyKey = json['idempotencyKey'] as String;
+      final itemValues = json['items'] as List<dynamic>;
+      if (idempotencyKey.isEmpty) throw const FormatException('Queued purchase idempotencyKey must not be empty.');
+      if (itemValues.isEmpty) throw const FormatException('Queued purchase items must not be empty.');
+
+      return QueuedPurchaseModel(
+        idempotencyKey: idempotencyKey,
+        items: itemValues.cast<Map<String, dynamic>>().map(CartItemModel.fromJson).toList(growable: false),
+        pricing: CartPricingModel.fromJson(json['pricing'] as Map<String, dynamic>),
+        createdAt: DateTime.parse(json['createdAt'] as String).toUtc(),
+        phase: QueuedPurchasePhase.values.byName(json['phase'] as String),
+      );
     } on ArgumentError {
       throw const FormatException('Queued purchase phase is invalid.');
+    } on TypeError catch (error) {
+      throw FormatException('Queued purchase has an invalid structure.', error);
     }
-
-    final items = itemValues
-        .map((value) {
-          if (value is! Map<String, dynamic>) throw const FormatException('Each queued purchase item must be an object.');
-          return CartItemModel.fromJson(value);
-        })
-        .toList(growable: false);
-
-    return QueuedPurchaseModel(idempotencyKey: idempotencyKey.trim(), items: items, pricing: CartPricingModel.fromJson(pricingValue), createdAt: createdAt.toUtc(), phase: phase);
   }
 
   final String idempotencyKey;

@@ -38,7 +38,8 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   final GetBrands _getBrands;
 
   List<Category> _categories = const <Category>[];
-  List<String> _brands = const <String>[];
+  bool _categoriesLoaded = false;
+  List<String>? _brands;
   String? _selectedCategoryId;
   String? _selectedBrand;
   String _searchQuery = '';
@@ -50,7 +51,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   /// Logic ********************************************************************
 
   ProductsFilters get _filters {
-    return ProductsFilters(categories: _categories, brands: _brands, searchQuery: _searchQuery, categoryId: _selectedCategoryId, brand: _selectedBrand);
+    return ProductsFilters(categories: _categories, brands: _brands ?? const [], searchQuery: _searchQuery, categoryId: _selectedCategoryId, brand: _selectedBrand);
   }
 
   bool _isCurrentRevision(int revision) => revision == _queryRevision;
@@ -85,7 +86,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   }
 
   Future<({List<Category> categories, String? errorMessage})> _loadCategories() async {
-    var categories = const <Category>[];
+    List<Category> categories = const <Category>[];
     String? errorMessage;
     final result = await _getCategories();
     result.fold((failure) => errorMessage = failure.errMessage, (loadedCategories) => categories = List<Category>.unmodifiable(loadedCategories));
@@ -93,7 +94,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   }
 
   Future<({List<String> brands, String? errorMessage})> _loadBrands() async {
-    var brands = const <String>[];
+    List<String> brands = const <String>[];
     String? errorMessage;
     final result = await _getBrands(categoryId: _selectedCategoryId);
     result.fold((failure) => errorMessage = failure.errMessage, (loadedBrands) => brands = List<String>.unmodifiable(loadedBrands));
@@ -108,9 +109,9 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     _selectedBrand = null;
     _searchQuery = '';
     _categories = <Category>[event.category];
-    _brands = const <String>[];
+    _categoriesLoaded = false;
 
-    await _refreshProducts(emit: emit, reloadCategories: true, reloadBrands: true);
+    await _refreshProducts(emit: emit, reloadBrands: true);
   }
 
   void _onProductsSearchChanged(ProductsSearchChanged event, Emitter<ProductsState> emit) {
@@ -147,8 +148,6 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   }
 
   Future<void> _onProductsFiltersCleared(ProductsFiltersCleared event, Emitter<ProductsState> emit) async {
-    if (!_filters.hasActiveFilters) return;
-
     _cancelSearchDebounce();
     _selectedCategoryId = null;
     _selectedBrand = null;
@@ -158,15 +157,16 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
   Future<void> _onProductsRetried(ProductsRetried event, Emitter<ProductsState> emit) async {
     _cancelSearchDebounce();
-    await _refreshProducts(emit: emit, reloadCategories: _categories.isEmpty, reloadBrands: true);
+    await _refreshProducts(emit: emit, reloadBrands: true);
   }
 
-  Future<void> _refreshProducts({required Emitter<ProductsState> emit, bool reloadCategories = false, bool reloadBrands = false}) async {
+  Future<void> _refreshProducts({required Emitter<ProductsState> emit, bool reloadBrands = false}) async {
     final revision = ++_queryRevision;
     _nextPage = 1;
+    if (reloadBrands) _brands = null;
     emit(ProductsLoading(_filters));
 
-    if (reloadCategories) {
+    if (!_categoriesLoaded) {
       final result = await _loadCategories();
       if (!_isCurrentRevision(revision)) return;
       if (result.errorMessage != null) {
@@ -174,9 +174,10 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         return;
       }
       _categories = result.categories;
+      _categoriesLoaded = true;
     }
 
-    if (reloadBrands) {
+    if (_brands == null) {
       final result = await _loadBrands();
       if (!_isCurrentRevision(revision)) return;
       if (result.errorMessage != null) {

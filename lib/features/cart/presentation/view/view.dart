@@ -19,9 +19,10 @@ import '../../../checkout/presentation/manager/outbox/bloc.dart';
 import '../../domain/entities/cart.dart';
 import '../../domain/entities/cart_item.dart';
 import '../manager/bloc.dart';
-import '../widgets/quantity_stepper.dart';
+import 'widgets/quantity_stepper.dart';
 
 part 'widgets/body.dart';
+part 'widgets/item_selection.dart';
 part 'widgets/cart_content.dart';
 part 'widgets/cart_tab_bar.dart';
 part 'widgets/cart_item_card.dart';
