@@ -44,7 +44,7 @@ class _CartActionBarState extends State<_CartActionBar> {
         }
       },
       builder: (context, state) {
-        final cartMutationsBlocked = context.watch<OutboxBloc>().state.blocksCartMutations;
+        final cartMutationsBlocked = context.select<OutboxBloc, bool>((bloc) => bloc.state.blocksCartMutations);
         final inCartQuantity = state.cart?.quantityFor(widget.product.id) ?? 0;
         final remainingStock = (widget.product.stock - inCartQuantity).clamp(0, widget.product.stock).toInt();
         final effectiveQuantity = remainingStock == 0 ? 1 : _quantity.clamp(1, remainingStock).toInt();

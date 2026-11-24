@@ -18,14 +18,19 @@ class _ControlledCatalogRepository extends Fake implements CatalogRepository {
   Completer<void>? categoriesGate;
   Completer<void>? dairyBrandsGate;
   final queries = <String>[];
+  final brandRequests = <String?>[];
+  int categoryRequests = 0;
+
   @override
   Future<Either<Failure, List<Category>>> getCategories() async {
+    categoryRequests++;
     await categoriesGate?.future;
     return const Right([fruit, dairy]);
   }
 
   @override
   Future<Either<Failure, List<String>>> getBrands({String? categoryId}) async {
+    brandRequests.add(categoryId);
     if (categoryId == 'dairy') {
       await dairyBrandsGate?.future;
     }
@@ -39,52 +44,72 @@ class _ControlledCatalogRepository extends Fake implements CatalogRepository {
   }
 }
 
+ProductsBloc _createBloc(_ControlledCatalogRepository repository) {
+  final bloc = ProductsBloc(GetProducts(repository), GetCategories(repository), GetBrands(repository));
+  addTearDown(bloc.close);
+  return bloc;
+}
+
 void main() {
-  late _ControlledCatalogRepository repository;
-  late ProductsBloc bloc;
-  setUp(() {
-    repository = _ControlledCatalogRepository();
-    bloc = ProductsBloc(GetProducts(repository), GetCategories(repository), GetBrands(repository));
-  });
-  tearDown(() => bloc.close());
+  const debounce = Duration(milliseconds: 400);
+
   testWidgets('search supersedes category bootstrap', (tester) async {
-    repository.categoriesGate = Completer();
+    final repository = _ControlledCatalogRepository()..categoriesGate = Completer<void>();
+    final bloc = _createBloc(repository);
+
     bloc.add(const ProductsRequested(fruit));
     await tester.pump();
     bloc.add(const ProductsSearchChanged('apple'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(debounce);
+
+    expect(repository.categoryRequests, 2);
     repository.categoriesGate!.complete();
     await tester.pump();
+
+    expect(bloc.state, isA<ProductsEmpty>());
     expect(bloc.state.filters.categories, [fruit, dairy]);
     expect(bloc.state.filters.brands, ['FreshFarm']);
     expect(repository.queries, ['apple']);
   });
+
   testWidgets('search supersedes Dairy brand load', (tester) async {
+    final repository = _ControlledCatalogRepository()..dairyBrandsGate = Completer<void>();
+    final bloc = _createBloc(repository);
+
     bloc.add(const ProductsRequested(fruit));
     await tester.pump();
-    repository.dairyBrandsGate = Completer();
     bloc.add(const ProductsCategoryChanged('dairy'));
     await tester.pump();
-    final pendingBrands = bloc.state.filters.brands;
+    expect(bloc.state.filters.brands, isEmpty);
+
     bloc.add(const ProductsSearchChanged('milk'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(debounce);
+
+    expect(repository.brandRequests, [fruit.id, dairy.id, dairy.id]);
     repository.dairyBrandsGate!.complete();
     await tester.pump();
+
+    expect(bloc.state, isA<ProductsEmpty>());
     expect(bloc.state.filters.brands, ['MilkWay']);
-    expect(pendingBrands, isEmpty);
     expect(repository.queries, ['', 'milk']);
   });
+
   testWidgets('Clear cancels pending search', (tester) async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = _createBloc(repository);
+
     bloc.add(const ProductsRequested(fruit));
     await tester.pump();
     bloc.add(const ProductsSearchChanged('apple'));
     await tester.pump();
     bloc.add(const ProductsFiltersCleared());
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(debounce);
+
+    expect(bloc.state, isA<ProductsEmpty>());
+    expect(bloc.state.filters.hasActiveFilters, isFalse);
     expect(repository.queries, ['', '']);
-    expect(bloc.state.filters.hasActiveFilters, false);
   });
 }
