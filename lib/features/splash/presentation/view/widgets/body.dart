@@ -26,7 +26,7 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   }
 
   void _initializeAnimations() {
-    _entranceController = AnimationController(duration: AppConstants.splashAnimationDuration, vsync: this);
+    _entranceController = AnimationController(duration: DurationConstants.splashAnimationDuration, vsync: this);
 
     _logoScale = Tween<double>(begin: 0.55, end: 1).animate(
       CurvedAnimation(
@@ -73,7 +73,7 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
   }
 
   void _scheduleNavigation() {
-    _navigationTimer = Timer(AppConstants.splashNavigationDelay, () {
+    _navigationTimer = Timer(DurationConstants.splashNavigationDelay, () {
       if (!mounted) return;
 
       Navigator.of(context).pushReplacementNamed(categoriesRoute);
@@ -92,8 +92,8 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          _BackgroundAccent(alignment: const Alignment(-1.35, -1.15), size: 260.r, color: kPrimaryLight),
-          _BackgroundAccent(alignment: const Alignment(1.4, 1.2), size: 300.r, color: kPrimary),
+          _DecorativeCircle(alignment: const Alignment(-1.35, -1.15), size: 260.r, color: kPrimaryLight),
+          _DecorativeCircle(alignment: const Alignment(1.4, 1.2), size: 300.r, color: kPrimary),
           SafeArea(
             child: Center(
               child: Padding(

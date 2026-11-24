@@ -21,7 +21,7 @@ class _ProductAppBarState extends State<_ProductAppBar> {
     final overlayForeground = colorScheme.brightness == Brightness.dark ? colorScheme.onSurface : colorScheme.onPrimary;
     final collapsedForeground = colorScheme.onSurface;
     final collapsedBackground = context.theme.scaffoldBackgroundColor;
-    final collapsedOverlayStyle = colorScheme.brightness == Brightness.dark ? AppConstants.statusBarOnDarkBackground : AppConstants.statusBarOnLightBackground;
+    final collapsedOverlayStyle = colorScheme.brightness == Brightness.dark ? SystemUiStyles.onDarkBackground : SystemUiStyles.onLightBackground;
 
     return SliverLayoutBuilder(
       builder: (context, constraints) {
@@ -32,7 +32,7 @@ class _ProductAppBarState extends State<_ProductAppBar> {
         final edgeFlattenProgress = (1 - (edgeDistanceToPinnedAppBar / maximumTransitionRadius)).clamp(0.0, 1.0).toDouble();
         final transitionRadius = maximumTransitionRadius * (1 - edgeFlattenProgress);
         final foregroundColor = Color.lerp(overlayForeground, collapsedForeground, transitionProgress)!;
-        final statusBarStyle = collapseProgress < 0.5 ? AppConstants.statusBarOnDarkBackground : collapsedOverlayStyle;
+        final statusBarStyle = collapseProgress < 0.5 ? SystemUiStyles.onDarkBackground : collapsedOverlayStyle;
 
         return SliverAppBar(
           pinned: true,
@@ -88,6 +88,7 @@ class _ProductAppBarState extends State<_ProductAppBar> {
                               fit: BoxFit.cover,
                               radius: 0,
                               bgColor: colorScheme.surfaceContainer,
+                              semanticLabel: '${widget.product.title}, image ${index + 1} of ${widget.images.length}',
                             );
                           },
                         );
@@ -137,7 +138,7 @@ class _ProductAppBarState extends State<_ProductAppBar> {
                   decoration: BoxDecoration(
                     color: collapsedBackground,
                     borderRadius: BorderRadius.vertical(top: Radius.circular(transitionRadius)),
-                    boxShadow: ShadowManager.cardShadow(Color.lerp(colorScheme.shadow, Colors.transparent, edgeFlattenProgress)!),
+                    boxShadow: AppShadows.cardShadow(Color.lerp(colorScheme.shadow, Colors.transparent, edgeFlattenProgress)!),
                   ),
                   child: const SizedBox.expand(),
                 ),

@@ -1,9 +1,10 @@
 part of '../view.dart';
 
 class _ReviewContent extends StatelessWidget {
-  const _ReviewContent({required this.state});
+  const _ReviewContent({required this.state, required this.onSubmissionRequested});
 
   final CheckoutReviewRequired state;
+  final VoidCallback onSubmissionRequested;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +55,12 @@ class _ReviewContent extends StatelessWidget {
           _CheckoutTotals(cart: cart),
           SizedBox(height: 20.h),
           FilledButton.icon(
-            onPressed: state.canResubmit ? () => context.read<CheckoutBloc>().add(const CheckoutResubmitted()) : null,
+            onPressed: state.canResubmit
+                ? () {
+                    onSubmissionRequested();
+                    context.read<CheckoutBloc>().add(const CheckoutResubmitted());
+                  }
+                : null,
             icon: const Icon(Icons.refresh_rounded),
             label: const Text('Submit order again'),
           ),

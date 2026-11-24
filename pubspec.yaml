@@ -15,7 +15,6 @@ dependencies:
     sdk: flutter
   # --- UI & VISUAL COMPONENTS ---
   material_ui: ^1.11.1                      # Material Design UI components and utilities
-  cupertino_ui: ^1.1.7                      # Cupertino-style UI components for iOS interfaces
   cupertino_icons: ^2.0.0                   # iOS-style icons for Cupertino widgets and Apple-like UI
   flutter_svg: ^2.5.0                       # Render and display SVG images and vector icons efficiently
   cached_network_image: ^4.0.7              # Efficient image loading with disk & memory caching from network

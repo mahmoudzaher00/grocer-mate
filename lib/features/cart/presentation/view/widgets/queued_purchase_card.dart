@@ -43,7 +43,7 @@ class _QueuedPurchaseCard extends StatelessWidget {
         color: colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: colorScheme.primary.withValues(alpha: 0.24)),
-        boxShadow: ShadowManager.cardShadow(colorScheme.shadow),
+        boxShadow: AppShadows.cardShadow(colorScheme.shadow),
       ),
       child: Padding(
         padding: EdgeInsets.all(18.r),
@@ -73,7 +73,7 @@ class _QueuedPurchaseCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (isBusy) SizedBox(width: 20.r, height: 20.r, child: const CircularProgressIndicator(strokeWidth: 2)),
+                if (isBusy) SpinKitFadingCircle(color: colorScheme.onPrimaryContainer, size: 20.r),
               ],
             ),
             SizedBox(height: 14.h),

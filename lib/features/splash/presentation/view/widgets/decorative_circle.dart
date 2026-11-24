@@ -1,7 +1,7 @@
 part of '../view.dart';
 
-class _BackgroundAccent extends StatelessWidget {
-  const _BackgroundAccent({required this.alignment, required this.size, required this.color});
+class _DecorativeCircle extends StatelessWidget {
+  const _DecorativeCircle({required this.alignment, required this.size, required this.color});
 
   final Alignment alignment;
   final double size;

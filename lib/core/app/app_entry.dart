@@ -9,19 +9,18 @@ import '../../features/checkout/presentation/manager/outbox/bloc.dart';
 import '../../features/checkout/presentation/widgets/queued_checkout_coordinator.dart';
 import '../blocs/connectivity/bloc.dart';
 import '../blocs/theme/bloc.dart';
+import '../constants/duration_constants.dart';
 import '../routing/app_router.dart';
 import '../theme/app_theme.dart';
-import 'app_constants.dart';
-import 'app_di.dart';
+import '../theme/system_ui_styles.dart';
 import '../widgets/status_views/offline_banner.dart';
+import 'app_di.dart';
 
 class AppEntry extends StatelessWidget {
   const AppEntry({super.key});
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('🧱 AppEntry - build');
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<ConnectivityBloc>.value(value: instance<ConnectivityBloc>()),
@@ -29,59 +28,58 @@ class AppEntry extends StatelessWidget {
         BlocProvider<CartBloc>.value(value: instance<CartBloc>()),
         BlocProvider<OutboxBloc>.value(value: instance<OutboxBloc>()),
       ],
-      child: ScreenUtilInit(
-        designSize: const Size(375, 812),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, child) {
-          final reduceMotion = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.disableAnimations;
+      child: ScreenUtilInit(designSize: const Size(375, 812), minTextAdapt: true, splitScreenMode: true, builder: (_, _) => const _AppMaterial()),
+    );
+  }
+}
 
-          return BlocBuilder<ThemeBloc, ThemeState>(
-            buildWhen: (previous, current) => previous.themeMode != current.themeMode,
-            builder: (context, state) {
-              return MaterialApp(
-                title: 'GrocerMate',
-                debugShowCheckedModeBanner: false,
-                theme: buildLightTheme(),
-                darkTheme: buildDarkTheme(),
-                themeMode: state.themeMode,
-                themeAnimationDuration: reduceMotion ? Duration.zero : AppConstants.themeAnimationDuration,
-                themeAnimationCurve: Curves.easeOutCubic,
-                builder: (context, widgets) {
-                  final brightness = Theme.of(context).brightness;
-                  final systemUiOverlayStyle = brightness == Brightness.dark ? AppConstants.statusBarOnDarkBackground : AppConstants.statusBarOnLightBackground;
+class _AppMaterial extends StatelessWidget {
+  const _AppMaterial();
 
-                  return AnnotatedRegion<SystemUiOverlayStyle>(
-                    value: systemUiOverlayStyle,
-                    child: SkeletonizerConfig(
-                      data: appSkeletonizerConfig.copyWith(brightness: brightness),
-                      child: MediaQuery(
-                        data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
-                        child: QueuedCheckoutCoordinator(
-                          child: Stack(
-                            children: [
-                              Positioned.fill(child: widgets!),
-                              const PositionedDirectional(
-                                top: 0,
-                                start: 0,
-                                end: 0,
-                                child: SafeArea(bottom: false, child: IgnorePointer(child: OfflineBanner())),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                navigatorObservers: [routeObserver],
-                navigatorKey: AppConstants.navigatorKey,
-                onGenerateRoute: AppRouteGenerator.getRoute,
-                initialRoute: splashRoute,
-              );
-            },
-          );
-        },
+  @override
+  Widget build(BuildContext context) {
+    final reduceMotion = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.disableAnimations;
+
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      buildWhen: (previous, current) => previous.themeMode != current.themeMode,
+      builder: (context, state) {
+        return MaterialApp(
+          title: 'GrocerMate',
+          debugShowCheckedModeBanner: false,
+          theme: buildLightTheme(),
+          darkTheme: buildDarkTheme(),
+          themeMode: state.themeMode,
+          themeAnimationDuration: reduceMotion ? Duration.zero : DurationConstants.themeAnimationDuration,
+          themeAnimationCurve: Curves.easeOutCubic,
+          builder: (context, child) => _AppContent(child: child!),
+          navigatorObservers: [routeObserver],
+          navigatorKey: rootNavigatorKey,
+          onGenerateRoute: AppRouteGenerator.getRoute,
+          initialRoute: splashRoute,
+        );
+      },
+    );
+  }
+}
+
+class _AppContent extends StatelessWidget {
+  const _AppContent({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final systemUiOverlayStyle = brightness == Brightness.dark ? SystemUiStyles.onDarkBackground : SystemUiStyles.onLightBackground;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: systemUiOverlayStyle,
+      child: SkeletonizerConfig(
+        data: appSkeletonizerConfig.copyWith(brightness: brightness),
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+          child: QueuedCheckoutCoordinator(child: OfflineBannerLayout(child: child)),
+        ),
       ),
     );
   }

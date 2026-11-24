@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../theme/app_colors.dart';
+import '../constants/duration_constants.dart';
 
 /// Show a custom bottom sheet #################################################
 Future<T?> showCustomBottomSheet<T>({
@@ -9,17 +9,20 @@ Future<T?> showCustomBottomSheet<T>({
   bool isDismissible = true,
   bool enableDrag = true,
   bool showDragHandle = true,
-  double borderRadius = 32.0,
-  Color backgroundColor = kWhite,
+  double? borderRadius,
+  Color? backgroundColor,
 }) {
+  final reduceMotion = MediaQuery.disableAnimationsOf(context);
+
   return showModalBottomSheet<T>(
     context: context,
     isScrollControlled: true,
     isDismissible: isDismissible,
     enableDrag: enableDrag,
     backgroundColor: backgroundColor,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius))),
+    shape: borderRadius == null ? null : RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius))),
     showDragHandle: showDragHandle,
+    sheetAnimationStyle: reduceMotion ? AnimationStyle.noAnimation : null,
     useSafeArea: true,
     builder: (context) => child,
   );
@@ -35,7 +38,12 @@ Future<T?> showCustomAlertDialog<T>({required BuildContext context, required Wid
     barrierColor: barrierColor,
     animationStyle: reduceMotion
         ? AnimationStyle.noAnimation
-        : const AnimationStyle(curve: Curves.easeOutCubic, duration: Duration(milliseconds: 180), reverseCurve: Curves.easeInCubic, reverseDuration: Duration(milliseconds: 120)),
+        : const AnimationStyle(
+            curve: Curves.easeOutCubic,
+            duration: DurationConstants.dialogTransitionDuration,
+            reverseCurve: Curves.easeInCubic,
+            reverseDuration: DurationConstants.dialogReverseTransitionDuration,
+          ),
     builder: builder,
   );
 }

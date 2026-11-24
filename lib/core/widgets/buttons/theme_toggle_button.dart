@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../app/app_constants.dart';
 import '../../blocs/theme/bloc.dart';
+import '../../constants/duration_constants.dart';
 import '../../theme/theme_mode_manager.dart';
 import '../../utils/extensions/context_extensions.dart';
 
@@ -20,10 +20,10 @@ class ThemeToggleButton extends StatelessWidget {
     return IconButton(
       tooltip: isDark ? 'Use light theme' : 'Use dark theme',
       onPressed: () {
-        context.read<ThemeBloc>().add(ChangeTheme(themeMode: ThemeManager.oppositeOf(brightness)));
+        context.read<ThemeBloc>().add(ChangeTheme(themeMode: ThemeModeManager.oppositeOf(brightness)));
       },
       icon: AnimatedSwitcher(
-        duration: reduceMotion ? Duration.zero : AppConstants.themeIconAnimationDuration,
+        duration: reduceMotion ? Duration.zero : DurationConstants.themeIconAnimationDuration,
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
         transitionBuilder: (child, animation) {

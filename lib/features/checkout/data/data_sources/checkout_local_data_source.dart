@@ -26,7 +26,7 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
   @override
   Future<PurchaseResponseModel> submitPurchase(PurchaseRequestModel request) async {
     _validateRequest(request);
-    final cachedResponse = _loadIdempotentResponse(request.idempotencyKey);
+    final cachedResponse = await _loadIdempotentResponse(request.idempotencyKey);
     if (cachedResponse != null) return PurchaseResponseModel.fromJson(cachedResponse);
     if (responseDelay > Duration.zero) await Future<void>.delayed(responseDelay);
 
@@ -77,9 +77,9 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
     }
   }
 
-  Map<String, dynamic>? _loadIdempotentResponse(String? idempotencyKey) {
+  Future<Map<String, dynamic>?> _loadIdempotentResponse(String? idempotencyKey) async {
     if (idempotencyKey == null) return null;
-    final cachedValue = _preferences.getString(key: _checkoutReceiptPreferencesKey);
+    final cachedValue = await _preferences.getString(key: _checkoutReceiptPreferencesKey);
     if (cachedValue == null) return null;
 
     final decoded = jsonDecode(cachedValue);

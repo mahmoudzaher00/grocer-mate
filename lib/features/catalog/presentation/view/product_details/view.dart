@@ -4,9 +4,9 @@ import 'package:material_ui/material_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../../core/blocs/connectivity/bloc.dart';
-import '../../../../../core/app/app_constants.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_shadows.dart';
+import '../../../../../core/theme/system_ui_styles.dart';
 import '../../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../../core/utils/toast_utils.dart';
 import '../../../../../core/widgets/buttons/theme_toggle_button.dart';

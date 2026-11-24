@@ -1,7 +1,9 @@
 part of '../view.dart';
 
 class _Body extends StatelessWidget {
-  const _Body();
+  const _Body({required this.onSubmissionRequested});
+
+  final VoidCallback onSubmissionRequested;
 
   @override
   Widget build(BuildContext context) {
@@ -9,17 +11,23 @@ class _Body extends StatelessWidget {
       listenWhen: (_, current) => current is CheckoutSucceeded,
       listener: (context, state) {
         if (state case CheckoutSucceeded(:final purchase, :final processedProductIds)) {
+          if (!context.mounted || ModalRoute.of(context)?.isCurrent != true) return;
           Navigator.of(context).pop(CheckoutOutcome(orderId: purchase.orderId, finalTotal: purchase.finalTotal, processedProductIds: processedProductIds));
         }
       },
       builder: (context, state) {
         return switch (state) {
           CheckoutInitial() || CheckoutSubmitting() || CheckoutSucceeded() => const _CheckoutLoading(),
-          CheckoutReviewRequired() => _ReviewContent(state: state),
+          CheckoutReviewRequired() => _ReviewContent(state: state, onSubmissionRequested: onSubmissionRequested),
           CheckoutFailure(:final message) => ErrorStateWidget(
             title: 'Checkout could not be completed',
             message: message,
-            onRetry: state.request.cart.isEmpty ? null : () => context.read<CheckoutBloc>().add(const CheckoutRetried()),
+            onRetry: state.request.cart.isEmpty
+                ? null
+                : () {
+                    onSubmissionRequested();
+                    context.read<CheckoutBloc>().add(const CheckoutRetried());
+                  },
           ),
         };
       },
@@ -38,7 +46,7 @@ class _CheckoutLoading extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(),
+            SpinKitFadingCircle(color: context.colorScheme.primary, size: 48.r),
             SizedBox(height: 20.h),
             Text('Checking the latest prices and stock...', textAlign: TextAlign.center, style: context.textTheme.bodyLarge),
           ],

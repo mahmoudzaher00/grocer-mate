@@ -19,6 +19,12 @@ class _ProductSearchFieldState extends State<_ProductSearchField> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   void didUpdateWidget(covariant _ProductSearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.query == oldWidget.query || _controller.text == widget.query) return;
@@ -31,39 +37,29 @@ class _ProductSearchFieldState extends State<_ProductSearchField> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.theme.colorScheme;
-
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: _controller,
       builder: (context, value, _) {
-        return BaseTextField(
+        return TextFormField(
           controller: _controller,
-          onChangedFunction: (query) => context.read<ProductsBloc>().add(ProductsSearchChanged(query)),
+          onChanged: (query) => context.read<ProductsBloc>().add(ProductsSearchChanged(query)),
           textInputAction: TextInputAction.search,
-          inputTextStyle: context.textTheme.bodyLarge,
-          hintText: 'Search products',
-          hintStyle: context.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.55)),
-          prefixIconWidget: Icon(Icons.search_rounded, color: colorScheme.onSurface.withValues(alpha: 0.65)),
-          suffixIcon: value.text.isEmpty
-              ? null
-              : IconButton(
-                  tooltip: 'Clear search',
-                  onPressed: () {
-                    _controller.clear();
-                    context.read<ProductsBloc>().add(const ProductsSearchChanged(''));
-                  },
-                  icon: const Icon(Icons.close_rounded),
-                ),
-          filledColorTextFiled: true,
-          fillColorTextFiled: colorScheme.surface,
-          contentHorizontalPadding: 14.w,
-          contentVerticalPadding: 12.h,
-          enabledBorderColor: colorScheme.outline,
-          focusedBorderColor: colorScheme.primary,
-          enabledBorderRadius: 14.r,
-          focusedBorderRadius: 14.r,
-          cursorColor: colorScheme.primary,
-          // closeKeyboardOnTapOutside: false,
+          style: context.textTheme.bodyLarge,
+          onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+          decoration: InputDecoration(
+            hintText: 'Search products',
+            prefixIcon: const Icon(Icons.search_rounded),
+            suffixIcon: value.text.isEmpty
+                ? null
+                : IconButton(
+                    tooltip: 'Clear search',
+                    onPressed: () {
+                      _controller.clear();
+                      context.read<ProductsBloc>().add(const ProductsSearchChanged(''));
+                    },
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+          ),
         );
       },
     );

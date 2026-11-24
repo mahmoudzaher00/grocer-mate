@@ -51,7 +51,7 @@ class OutboxBloc extends Bloc<OutboxEvent, OutboxState> {
         _onCheckoutOpened(emit);
         return;
       case OutboxCheckoutClosed():
-        _onCheckoutClosed(emit);
+        _onCheckoutClosed(event, emit);
         return;
       case OutboxManualReviewRequested():
         _onManualReviewRequested(emit);
@@ -145,8 +145,8 @@ class OutboxBloc extends Bloc<OutboxEvent, OutboxState> {
     }
   }
 
-  void _onCheckoutClosed(Emitter<OutboxState> emit) {
-    if (state case OutboxCheckoutActive(:final purchase)) emit(OutboxDeferred(purchase));
+  void _onCheckoutClosed(OutboxCheckoutClosed event, Emitter<OutboxState> emit) {
+    if (state case OutboxCheckoutActive(:final purchase) when event.purchaseKey == null || event.purchaseKey == purchase.idempotencyKey) emit(OutboxDeferred(purchase));
   }
 
   void _onManualReviewRequested(Emitter<OutboxState> emit) {

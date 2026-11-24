@@ -29,7 +29,7 @@ final class CartLocalDataSourceImpl implements CartLocalDataSource {
 
   @override
   Future<CartItemsSnapshot> loadItems() async {
-    final cachedValue = _preferences.getString(key: _cartPreferencesKey);
+    final cachedValue = await _preferences.getString(key: _cartPreferencesKey);
     if (cachedValue == null) return (cartItems: const <CartItemModel>[], savedItems: const <CartItemModel>[], lastDetachedPurchaseKey: null);
 
     final decoded = jsonDecode(cachedValue);

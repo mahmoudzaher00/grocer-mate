@@ -1,7 +1,3 @@
-import 'package:material_ui/material_ui.dart';
-
-import '../../app/app_constants.dart';
-
 const List<String> _englishDigits = <String>['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 const List<String> _arabicDigits = <String>['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
@@ -29,7 +25,7 @@ String? _trimmedOrNull(String? value) {
 }
 
 String _normalizeComparableString(String value) {
-  return value.trim().toLowerCase().replaceAll(RegExp(r'\s+'), AppConstants.empty);
+  return value.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '');
 }
 
 /// Converts Arabic numerals to English numerals.
@@ -52,7 +48,7 @@ extension NullableStringExtension on String? {
   ///
   /// This intentionally does not trim the original value.
   String orEmpty() {
-    return this ?? AppConstants.empty;
+    return this ?? '';
   }
 
   /// Returns the trimmed value or the localized "not specified" text.
@@ -96,14 +92,7 @@ extension NormalizedStringValues on Iterable<String?> {
 /// Provides fallback values for nullable integers.
 extension NullableInt on int? {
   int orZero() {
-    return this ?? AppConstants.zero;
-  }
-
-  String get formattedProgress {
-    final value = this;
-    if (value == null) return _dash;
-
-    return '${value.clamp(0, 100)}%';
+    return this ?? 0;
   }
 }
 
@@ -111,26 +100,5 @@ extension NullableInt on int? {
 extension CurrencyFormatting on num {
   String formatCurrency({required String currencySymbol, int decimalDigits = 2}) {
     return '$currencySymbol${toStringAsFixed(decimalDigits)}';
-  }
-}
-
-/// Generates initials from a person's name.
-extension UserInitialsExtension on String {
-  String get initials {
-    final nameParts = trim().split(RegExp(r'\s+')).where((part) => part.isNotEmpty).toList();
-
-    if (nameParts.isEmpty) {
-      return AppConstants.empty;
-    }
-
-    final firstInitial = nameParts.first.characters.first;
-
-    if (nameParts.length == 1) {
-      return firstInitial.toUpperCase();
-    }
-
-    final lastInitial = nameParts.last.characters.first;
-
-    return '$firstInitial$lastInitial'.toUpperCase();
   }
 }

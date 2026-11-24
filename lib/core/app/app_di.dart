@@ -41,7 +41,7 @@ final instance = GetIt.instance;
 Future<void> initializeDependencies() async {
   /// Core / Generics **********************************************************
   instance.registerSingleton<AppPreferences>(await AppPreferences.create());
-  instance.registerLazySingleton<NetworkManager>(() => NetworkManager());
+  instance.registerLazySingleton<NetworkManager>(() => NetworkManager(), dispose: (manager) => manager.dispose());
 
   /// Data sources *************************************************************
   instance.registerLazySingleton<CatalogLocalDataSource>(() => CatalogLocalDataSourceImpl(simulatePaginationFailure: kDebugMode));
@@ -73,14 +73,17 @@ Future<void> initializeDependencies() async {
   final canLoadCart = outboxBootstrapResult.fold((_) => false, (_) => true);
 
   /// Blocs instance ***********************************************************
-  instance.registerLazySingleton<ConnectivityBloc>(() => ConnectivityBloc(instance<NetworkManager>())..add(const ConnectivityStarted()));
-  instance.registerLazySingleton<ThemeBloc>(() => ThemeBloc(instance<AppPreferences>()));
+  instance.registerLazySingleton<ConnectivityBloc>(() => ConnectivityBloc(instance<NetworkManager>())..add(const ConnectivityStarted()), dispose: (bloc) => bloc.close());
+  instance.registerLazySingleton<ThemeBloc>(() => ThemeBloc(instance<AppPreferences>()), dispose: (bloc) => bloc.close());
   instance.registerLazySingleton<CartBloc>(() {
     final bloc = CartBloc(instance<LoadCart>(), instance<SaveCart>());
     if (canLoadCart) bloc.add(const CartRequested());
     return bloc;
-  });
-  instance.registerLazySingleton<OutboxBloc>(() => OutboxBloc(instance<QueueOfflinePurchase>(), instance<RecoverQueuedPurchase>(), instance<ClearQueuedPurchase>(), outboxBootstrapResult));
+  }, dispose: (bloc) => bloc.close());
+  instance.registerLazySingleton<OutboxBloc>(
+    () => OutboxBloc(instance<QueueOfflinePurchase>(), instance<RecoverQueuedPurchase>(), instance<ClearQueuedPurchase>(), outboxBootstrapResult),
+    dispose: (bloc) => bloc.close(),
+  );
   instance.registerFactory<CategoriesBloc>(() => CategoriesBloc(instance<GetCategories>()));
   instance.registerFactory<ProductDetailsBloc>(() => ProductDetailsBloc(instance<GetProductDetails>()));
   instance.registerFactory<ProductsBloc>(() => ProductsBloc(instance<GetProducts>(), instance<GetCategories>(), instance<GetBrands>()));

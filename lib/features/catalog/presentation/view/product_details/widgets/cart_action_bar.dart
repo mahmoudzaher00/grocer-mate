@@ -59,7 +59,7 @@ class _CartActionBarState extends State<_CartActionBar> {
             : 'Add to Cart';
 
         return DecoratedBox(
-          decoration: BoxDecoration(color: colorScheme.surface, boxShadow: ShadowManager.bottomNavBarShadow),
+          decoration: BoxDecoration(color: colorScheme.surface, boxShadow: AppShadows.bottomNavigationBarShadow),
           child: SafeArea(
             top: false,
             child: Padding(

@@ -16,9 +16,10 @@ import 'route_names.dart';
 
 export 'route_names.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 final AppRouteObserver routeObserver = AppRouteObserver();
 
-class AppRouteObserver extends RouteObserver<ModalRoute<void>> {
+final class AppRouteObserver extends RouteObserver<ModalRoute<void>> {
   final ValueNotifier<String?> currentRouteName = ValueNotifier<String?>(null);
 
   void _updateCurrentRoute(Route<dynamic>? route) {
@@ -44,7 +45,7 @@ class AppRouteObserver extends RouteObserver<ModalRoute<void>> {
   }
 }
 
-class AppRouteGenerator {
+abstract final class AppRouteGenerator {
   static Route<dynamic> getRoute(RouteSettings settings) {
     switch (settings.name) {
       case splashRoute:
@@ -56,7 +57,7 @@ class AppRouteGenerator {
         );
       case productsRoute:
         final category = settings.arguments;
-        if (category is! Category) return unDefinedRoute(settings);
+        if (category is! Category) return _undefinedRoute(settings);
 
         return MaterialPageRoute(
           settings: settings,
@@ -64,7 +65,7 @@ class AppRouteGenerator {
         );
       case productDetailsRoute:
         final product = settings.arguments;
-        if (product is! Product) return unDefinedRoute(settings);
+        if (product is! Product) return _undefinedRoute(settings);
 
         return MaterialPageRoute(
           settings: settings,
@@ -77,11 +78,11 @@ class AppRouteGenerator {
         return MaterialPageRoute(settings: settings, builder: (_) => const CartView());
 
       default:
-        return unDefinedRoute(settings);
+        return _undefinedRoute(settings);
     }
   }
 
-  static Route<dynamic> unDefinedRoute(RouteSettings settings) {
+  static Route<dynamic> _undefinedRoute(RouteSettings settings) {
     return MaterialPageRoute(
       settings: settings,
       builder: (_) => Scaffold(

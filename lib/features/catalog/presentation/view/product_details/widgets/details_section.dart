@@ -37,7 +37,7 @@ class _DetailsCard extends StatelessWidget {
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22.r),
         border: Border.all(color: colorScheme.outlineVariant),
-        boxShadow: ShadowManager.cardShadow(colorScheme.shadow),
+        boxShadow: AppShadows.cardShadow(colorScheme.shadow),
       ),
       child: Padding(padding: EdgeInsets.all(20.r), child: child),
     );

@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-class AppFonts {
+abstract final class AppFonts {
   static const String fontFamily = 'Nunito';
 
   static const FontWeight regular = FontWeight.w400;

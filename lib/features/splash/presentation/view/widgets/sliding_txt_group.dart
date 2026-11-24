@@ -8,7 +8,7 @@ class _SlidingTextGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = context.textTheme.headlineLarge?.copyWith(fontSize: (context.width * 0.1).clamp(34.0, 44.0), letterSpacing: -1.2);
+    final titleStyle = context.textTheme.headlineLarge?.copyWith(fontSize: (context.screenWidth * 0.1).clamp(34.0, 44.0), letterSpacing: -1.2);
     final colorScheme = context.theme.colorScheme;
 
     return FadeTransition(

@@ -3,9 +3,17 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import '../utils/logging/app_logger.dart';
 
 final class NetworkManager {
-  NetworkManager({InternetConnectionChecker? connectionChecker}) : _connectionChecker = connectionChecker ?? _createConnectionChecker();
+  NetworkManager({InternetConnectionChecker? connectionChecker}) : _ownsChecker = connectionChecker == null, _connectionChecker = connectionChecker ?? _createConnectionChecker();
 
   final InternetConnectionChecker _connectionChecker;
+  final bool _ownsChecker;
+  bool _disposed = false;
+
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    if (_ownsChecker) _connectionChecker.dispose();
+  }
 
   static InternetConnectionChecker _createConnectionChecker() {
     return InternetConnectionChecker.createInstance(

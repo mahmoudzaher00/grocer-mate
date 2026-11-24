@@ -31,7 +31,7 @@ final class CatalogCacheDataSourceImpl implements CatalogCacheDataSource {
 
   @override
   Future<List<CategoryModel>> getCategories() async {
-    final values = _readCache()['categories'];
+    final values = (await _readCache())['categories'];
     if (values == null) throw const CatalogCacheMissException();
     if (values is! List<dynamic>) throw const FormatException('Cached categories must be a list.');
 
@@ -45,9 +45,9 @@ final class CatalogCacheDataSourceImpl implements CatalogCacheDataSource {
 
   @override
   Future<void> saveCategories(List<CategoryModel> categories) async {
-    final cache = _readCache();
-    cache['categories'] = categories.map((category) => category.toJson()).toList(growable: false);
-    await _writeCache(cache);
+    await _updateCache((cache) {
+      cache['categories'] = categories.map((category) => category.toJson()).toList(growable: false);
+    });
   }
 
   @override
@@ -56,7 +56,7 @@ final class CatalogCacheDataSourceImpl implements CatalogCacheDataSource {
       throw const FormatException('Category id must not be empty.');
     }
 
-    final products = _readProducts();
+    final products = await _readProducts();
     return products.where((product) => categoryId == null || product.categoryId == categoryId).map((product) => product.brand).toSet().toList(growable: false)..sort();
   }
 
@@ -66,21 +66,21 @@ final class CatalogCacheDataSourceImpl implements CatalogCacheDataSource {
     if (brand != null && brand.trim().isEmpty) throw const FormatException('Brand must not be empty.');
     if (page <= 0 || pageSize <= 0) throw const FormatException('Page and page size must be positive.');
 
-    return ProductPageModel.fromProducts(products: _readProducts(), categoryId: categoryId, brand: brand, searchQuery: searchQuery, page: page, pageSize: pageSize);
+    return ProductPageModel.fromProducts(products: await _readProducts(), categoryId: categoryId, brand: brand, searchQuery: searchQuery, page: page, pageSize: pageSize);
   }
 
   @override
   Future<void> saveProducts(List<ProductModel> products) async {
-    final cache = _readCache();
-    cache['products'] = products.map((product) => product.toJson()).toList(growable: false);
-    await _writeCache(cache);
+    await _updateCache((cache) {
+      cache['products'] = products.map((product) => product.toJson()).toList(growable: false);
+    });
   }
 
   @override
   Future<ProductDetailsModel> getProductDetails(String productId) async {
     if (productId.trim().isEmpty) throw const FormatException('Product id must not be empty.');
 
-    final details = _readCache()['productDetails'];
+    final details = (await _readCache())['productDetails'];
     if (details == null) throw const CatalogCacheMissException();
     if (details is! Map<String, dynamic>) throw const FormatException('Cached product details must be an object.');
 
@@ -92,20 +92,20 @@ final class CatalogCacheDataSourceImpl implements CatalogCacheDataSource {
 
   @override
   Future<void> saveProductDetails(ProductDetailsModel productDetails) async {
-    final cache = _readCache();
-    final currentDetails = cache['productDetails'];
-    final details = currentDetails == null
-        ? <String, dynamic>{}
-        : currentDetails is Map<String, dynamic>
-        ? Map<String, dynamic>.of(currentDetails)
-        : throw const FormatException('Cached product details must be an object.');
-    details[productDetails.product.id] = productDetails.toCacheJson();
-    cache['productDetails'] = details;
-    await _writeCache(cache);
+    await _updateCache((cache) {
+      final currentDetails = cache['productDetails'];
+      final details = currentDetails == null
+          ? <String, dynamic>{}
+          : currentDetails is Map<String, dynamic>
+          ? Map<String, dynamic>.of(currentDetails)
+          : throw const FormatException('Cached product details must be an object.');
+      details[productDetails.product.id] = productDetails.toCacheJson();
+      cache['productDetails'] = details;
+    });
   }
 
-  List<ProductModel> _readProducts() {
-    final values = _readCache()['products'];
+  Future<List<ProductModel>> _readProducts() async {
+    final values = (await _readCache())['products'];
     if (values == null) throw const CatalogCacheMissException();
     if (values is! List<dynamic>) throw const FormatException('Cached products must be a list.');
 
@@ -120,8 +120,11 @@ final class CatalogCacheDataSourceImpl implements CatalogCacheDataSource {
         .toList(growable: false);
   }
 
-  Map<String, dynamic> _readCache() {
-    final cachedValue = _preferences.getString(key: _catalogCacheKey);
+  Future<Map<String, dynamic>> _readCache() async {
+    return _decodeCache(await _preferences.getString(key: _catalogCacheKey));
+  }
+
+  Map<String, dynamic> _decodeCache(String? cachedValue) {
     if (cachedValue == null) return <String, dynamic>{};
 
     final decoded = jsonDecode(cachedValue);
@@ -129,8 +132,15 @@ final class CatalogCacheDataSourceImpl implements CatalogCacheDataSource {
     return Map<String, dynamic>.of(decoded);
   }
 
-  Future<void> _writeCache(Map<String, dynamic> cache) async {
-    final didSave = await _preferences.setString(key: _catalogCacheKey, value: jsonEncode(cache));
+  Future<void> _updateCache(void Function(Map<String, dynamic> cache) update) async {
+    final didSave = await _preferences.updateString(
+      key: _catalogCacheKey,
+      update: (cachedValue) {
+        final cache = _decodeCache(cachedValue);
+        update(cache);
+        return jsonEncode(cache);
+      },
+    );
     if (!didSave) throw StateError('The catalog cache could not be saved.');
   }
 }

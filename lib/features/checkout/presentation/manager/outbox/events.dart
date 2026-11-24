@@ -43,7 +43,12 @@ final class OutboxCheckoutOpened extends OutboxEvent {
 }
 
 final class OutboxCheckoutClosed extends OutboxEvent {
-  const OutboxCheckoutClosed();
+  const OutboxCheckoutClosed({this.purchaseKey});
+
+  final String? purchaseKey;
+
+  @override
+  List<Object?> get props => [purchaseKey];
 }
 
 final class OutboxManualReviewRequested extends OutboxEvent {

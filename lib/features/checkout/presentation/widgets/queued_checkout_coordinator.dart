@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../core/app/app_constants.dart';
 import '../../../../core/blocs/connectivity/bloc.dart';
 import '../../../../core/routing/app_router.dart';
+import '../../../../core/utils/logging/app_logger.dart';
 import '../../../cart/presentation/manager/bloc.dart';
 import '../manager/outbox/bloc.dart';
 import '../view/view.dart';
@@ -61,7 +61,7 @@ class _QueuedCheckoutCoordinatorState extends State<QueuedCheckoutCoordinator> w
 
   bool get _isNavigationReady {
     final routeName = routeObserver.currentRouteName.value;
-    return routeName != null && routeName != splashRoute && AppConstants.navigatorKey.currentState != null;
+    return routeName != null && routeName != splashRoute && rootNavigatorKey.currentState != null;
   }
 
   void _tryPresentCheckout() {
@@ -73,10 +73,11 @@ class _QueuedCheckoutCoordinatorState extends State<QueuedCheckoutCoordinator> w
       final state = context.read<OutboxBloc>().state;
       if (state is OutboxReadyForCheckout) _presentCheckout(state);
     });
+    WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   Future<void> _presentCheckout(OutboxReadyForCheckout state) async {
-    final navigatorContext = AppConstants.navigatorKey.currentContext;
+    final navigatorContext = rootNavigatorKey.currentContext;
     if (navigatorContext == null) return;
 
     _isPresentingCheckout = true;
@@ -89,6 +90,9 @@ class _QueuedCheckoutCoordinatorState extends State<QueuedCheckoutCoordinator> w
       } else {
         context.read<OutboxBloc>().add(OutboxCheckoutSucceeded(orderId: outcome.orderId, finalTotal: outcome.finalTotal, currencySymbol: state.purchase.cart.pricing.currencySymbol));
       }
+    } on Object catch (error, stackTrace) {
+      AppLogger.e('Queued checkout could not be presented.', error: error, stackTrace: stackTrace);
+      if (mounted) context.read<OutboxBloc>().add(OutboxCheckoutClosed(purchaseKey: state.purchase.idempotencyKey));
     } finally {
       _isPresentingCheckout = false;
     }
@@ -103,10 +107,11 @@ class _QueuedCheckoutCoordinatorState extends State<QueuedCheckoutCoordinator> w
       final state = context.read<OutboxBloc>().state;
       if (state is OutboxCompleted) _showConfirmation(state);
     });
+    WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   Future<void> _showConfirmation(OutboxCompleted state) async {
-    final navigatorContext = AppConstants.navigatorKey.currentContext;
+    final navigatorContext = rootNavigatorKey.currentContext;
     if (navigatorContext == null) return;
 
     _isShowingConfirmation = true;

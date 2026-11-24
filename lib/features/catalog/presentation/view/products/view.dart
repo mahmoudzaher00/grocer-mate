@@ -10,7 +10,6 @@ import '../../../../../core/utils/modal_utils.dart';
 import '../../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../../core/widgets/buttons/theme_toggle_button.dart';
 import '../../../../../core/widgets/images/network_image_widget.dart';
-import '../../../../../core/widgets/forms/base_text_field.dart';
 import '../../../../../core/widgets/status_views/empty_state_widget.dart';
 import '../../../../../core/widgets/status_views/error_state_widget.dart';
 import '../../../../cart/presentation/widgets/cart_button.dart';

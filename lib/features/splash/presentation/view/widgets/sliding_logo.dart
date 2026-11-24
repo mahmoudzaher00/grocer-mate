@@ -23,7 +23,7 @@ class _BrandMark extends StatelessWidget {
     return Container(
       width: 116,
       height: 116,
-      decoration: BoxDecoration(color: kWhite, shape: BoxShape.circle, boxShadow: ShadowManager.brandMarkShadow),
+      decoration: BoxDecoration(color: kWhite, shape: BoxShape.circle, boxShadow: AppShadows.brandMarkShadow),
       padding: const EdgeInsets.all(10),
       child: ClipOval(child: SvgPicture.asset(SvgAssets.logo, fit: BoxFit.cover)),
     );

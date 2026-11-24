@@ -32,7 +32,7 @@ class _OrderSummary extends StatelessWidget {
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: colorScheme.outlineVariant),
-        boxShadow: ShadowManager.cardShadow(colorScheme.shadow),
+        boxShadow: AppShadows.cardShadow(colorScheme.shadow),
       ),
       child: Padding(
         padding: EdgeInsets.all(20.r),

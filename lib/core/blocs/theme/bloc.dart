@@ -10,7 +10,7 @@ part 'states.dart';
 
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   ThemeBloc(this._appPreferences) : super(ChangeThemeState(themeMode: _appPreferences.getAppThemeMode())) {
-    on<ChangeTheme>(_onChangeTheme);
+    on<ChangeTheme>(_onChangeTheme, transformer: (events, mapper) => events.asyncExpand(mapper));
   }
 
   final AppPreferences _appPreferences;

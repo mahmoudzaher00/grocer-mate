@@ -14,7 +14,7 @@ class _ProductCard extends StatelessWidget {
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: colorScheme.outline),
-        boxShadow: ShadowManager.cardShadow(colorScheme.shadow),
+        boxShadow: AppShadows.cardShadow(colorScheme.shadow),
       ),
       child: Material(
         type: MaterialType.transparency,

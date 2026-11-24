@@ -59,7 +59,6 @@ class _ProductControls extends StatelessWidget {
   Future<ProductFilterOption?> _showFilterSheet(BuildContext context, {required String title, required String? selectedValue, required List<ProductFilterOption> options}) {
     return showCustomBottomSheet<ProductFilterOption>(
       context: context,
-      showDragHandle: true,
       backgroundColor: context.theme.scaffoldBackgroundColor,
       child: _FilterOptionsSheet(title: title, selectedValue: selectedValue, options: options),
     );

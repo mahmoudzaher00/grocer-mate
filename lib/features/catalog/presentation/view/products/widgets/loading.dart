@@ -34,7 +34,7 @@ class _ProductLoadingCard extends StatelessWidget {
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(color: colorScheme.outline),
-          boxShadow: ShadowManager.cardShadow(colorScheme.shadow),
+          boxShadow: AppShadows.cardShadow(colorScheme.shadow),
         ),
         child: Padding(
           padding: EdgeInsets.all(12.r),

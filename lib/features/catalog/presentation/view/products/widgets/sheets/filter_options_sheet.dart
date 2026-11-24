@@ -12,7 +12,7 @@ class _FilterOptionsSheet extends StatelessWidget {
     final colorScheme = context.theme.colorScheme;
 
     return SizedBox(
-      height: context.height * 0.62,
+      height: context.screenHeight * 0.62,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -8,7 +8,6 @@ const Color kPrimaryDark = Color(0xFF006699);
 /// SECONDARY & ACCENT COLORS **************************************************
 const Color kSecondary = Color(0xFF14151A);
 const Color kAccent = Color(0xFF5D9CEC);
-// const Color kAccent = Color(0xFFE5F6FD);
 
 /// BACKGROUND & SURFACE COLORS ************************************************
 const Color kBackground = Color(0xFFF9FAFB);
@@ -24,6 +23,7 @@ const Color kTextInverse = Color(0xFF625F6E);
 const Color kSuccess = Color(0xFF22C55E);
 const Color kWarning = Color(0xFFF59E0B);
 const Color kError = Color(0xFFEF4444);
+const Color kErrorHighContrast = Color(0xFFDC2626);
 const Color kErrorLight = Color(0xFFFF7378);
 const Color kInfo = kPrimary;
 
@@ -69,13 +69,13 @@ const Color kGrey98 = Color(0xFF9899A7);
 /// SHADOWS ********************************************************************
 const Color kShadowSm = Color(0x11000000);
 const Color kShadowMd = Color(0x29000000);
-const Color kShadowSoft = Color(0xD000000);
+const Color kShadowSoft = Color(0x0D000000);
 const Color kShadowSubtle = Color(0x0F061B16);
 const Color kShadowBlue = Color(0x1A1280AC);
-const Color kShadowLightBlue = Color(0x8262740);
+const Color kShadowLightBlue = Color(0x08262740);
 const Color kShadowOlive = Color(0x16192408);
 const Color kChartShadowMedium = Color(0x30000000);
-const Color kChartShadowSubtle = Color(0xA000000);
+const Color kChartShadowSubtle = Color(0x0A000000);
 
 /// COMMON COLORS **************************************************************
 const Color kWhite = Color(0xFFFFFFFF);

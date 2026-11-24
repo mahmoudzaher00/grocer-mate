@@ -19,17 +19,22 @@ class _CartItemCard extends StatelessWidget {
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(18.r),
         border: Border.all(color: colorScheme.outlineVariant),
-        boxShadow: ShadowManager.cardShadow(colorScheme.shadow),
+        boxShadow: AppShadows.cardShadow(colorScheme.shadow),
       ),
       child: Padding(
         padding: EdgeInsets.all(14.r),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            InkWell(
+            NetworkImageWidget(
+              image: product.imageUrl,
+              width: 88.r,
+              height: 104.r,
+              radius: 14.r,
+              fit: BoxFit.cover,
+              bgColor: colorScheme.surfaceContainer,
               onTap: () => Navigator.of(context).pushNamed(productDetailsRoute, arguments: product),
-              borderRadius: BorderRadius.circular(14.r),
-              child: NetworkImageWidget(image: product.imageUrl, width: 88.r, height: 104.r, radius: 14.r, fit: BoxFit.cover, bgColor: colorScheme.surfaceContainer),
+              semanticLabel: 'View ${product.title} details',
             ),
             SizedBox(width: 12.w),
             Expanded(

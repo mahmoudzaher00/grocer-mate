@@ -5,28 +5,21 @@ import '../theme/app_colors.dart';
 
 enum ToastStates { success, error, warning, info, general }
 
-Color chooseToastColor(ToastStates state) {
-  Color color;
+Color _toastColorFor(ToastStates state) {
+  return switch (state) {
+    ToastStates.success => kSuccess,
+    ToastStates.error => kError,
+    ToastStates.warning => kWarning,
+    ToastStates.info => kGrey600,
+    ToastStates.general => kGrey7B,
+  };
+}
 
-  switch (state) {
-    case ToastStates.success:
-      color = kSuccess;
-      break;
-    case ToastStates.error:
-      color = kError;
-      break;
-    case ToastStates.warning:
-      color = kWarning;
-      break;
-    case ToastStates.info:
-      color = kGrey600;
-      break;
-    case ToastStates.general:
-      color = kGrey7B;
-      break;
-  }
-
-  return color;
+Color _toastTextColorFor(ToastStates state) {
+  return switch (state) {
+    ToastStates.error || ToastStates.warning => kTextPrimary,
+    _ => kWhite,
+  };
 }
 
 void showToast({required String message, required ToastStates state, Color? textColor, ToastGravity? gravity}) {
@@ -35,8 +28,8 @@ void showToast({required String message, required ToastStates state, Color? text
     msg: message,
     toastLength: Toast.LENGTH_LONG,
     gravity: gravity ?? ToastGravity.BOTTOM,
-    backgroundColor: chooseToastColor(state),
-    textColor: textColor ?? kWhite,
+    backgroundColor: _toastColorFor(state),
+    textColor: textColor ?? _toastTextColorFor(state),
     fontSize: 16.0,
     fontAsset: 'assets/fonts/Nunito-Medium.ttf',
   );

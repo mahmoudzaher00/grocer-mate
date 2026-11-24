@@ -20,7 +20,7 @@ final class CheckoutOutboxLocalDataSourceImpl implements CheckoutOutboxLocalData
 
   @override
   Future<QueuedPurchaseModel?> loadPurchase() async {
-    final cachedValue = _preferences.getString(key: _checkoutOutboxPreferencesKey);
+    final cachedValue = await _preferences.getString(key: _checkoutOutboxPreferencesKey);
     if (cachedValue == null) return null;
 
     final decoded = jsonDecode(cachedValue);
@@ -37,13 +37,6 @@ final class CheckoutOutboxLocalDataSourceImpl implements CheckoutOutboxLocalData
   @override
   Future<void> clearPurchase() async {
     final didClear = await _preferences.remove(key: _checkoutOutboxPreferencesKey);
-    if (!didClear) {
-      try {
-        if (_preferences.getString(key: _checkoutOutboxPreferencesKey) == null) return;
-      } on FormatException {
-        // An invalid value still means the outbox entry was not cleared.
-      }
-      throw StateError('The queued purchase could not be cleared.');
-    }
+    if (!didClear) throw StateError('The queued purchase could not be cleared.');
   }
 }
