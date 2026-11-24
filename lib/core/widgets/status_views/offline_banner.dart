@@ -13,15 +13,13 @@ class OfflineBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reduceMotion = MediaQuery.disableAnimationsOf(context);
-
     return BlocSelector<ConnectivityBloc, ConnectivityState, bool>(
       selector: (state) => state.isOffline,
       builder: (context, isOffline) {
         final colorScheme = context.theme.colorScheme;
 
         return AnimatedSwitcher(
-          duration: reduceMotion ? Duration.zero : DurationConstants.offlineBannerAnimationDuration,
+          duration: DurationConstants.offlineBannerAnimationDuration,
           child: isOffline
               ? Semantics(
                   key: const ValueKey<String>('offline-banner'),

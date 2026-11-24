@@ -1,5 +1,6 @@
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
+import '../constants/duration_constants.dart';
 import '../utils/logging/app_logger.dart';
 
 final class NetworkManager {
@@ -17,10 +18,10 @@ final class NetworkManager {
 
   static InternetConnectionChecker _createConnectionChecker() {
     return InternetConnectionChecker.createInstance(
-      checkTimeout: const Duration(seconds: 4),
+      checkTimeout: DurationConstants.connectionCheckTimeout,
       addresses: [
-        AddressCheckOption(uri: Uri.parse('https://www.google.com/generate_204')),
-        AddressCheckOption(uri: Uri.parse('https://picsum.photos/1')),
+        AddressCheckOption(uri: Uri.parse('https://www.google.com/generate_204'), timeout: DurationConstants.connectionCheckTimeout),
+        AddressCheckOption(uri: Uri.parse('https://picsum.photos/1'), timeout: DurationConstants.connectionCheckTimeout),
       ],
     );
   }

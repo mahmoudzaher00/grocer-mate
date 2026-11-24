@@ -175,10 +175,6 @@ class NetworkImageWidget extends StatelessWidget {
 
   Widget _buildLoadingPlaceholder(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    if (MediaQuery.disableAnimationsOf(context)) {
-      return Center(child: Icon(Icons.image_outlined, size: 32, color: colorScheme.onSurface.withValues(alpha: 0.45)));
-    }
-
     return SpinKitRipple(color: colorScheme.primary, size: 50);
   }
 

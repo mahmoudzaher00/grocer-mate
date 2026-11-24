@@ -38,8 +38,6 @@ class _AppMaterial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reduceMotion = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.disableAnimations;
-
     return BlocBuilder<ThemeBloc, ThemeState>(
       buildWhen: (previous, current) => previous.themeMode != current.themeMode,
       builder: (context, state) {
@@ -49,7 +47,7 @@ class _AppMaterial extends StatelessWidget {
           theme: buildLightTheme(),
           darkTheme: buildDarkTheme(),
           themeMode: state.themeMode,
-          themeAnimationDuration: reduceMotion ? Duration.zero : DurationConstants.themeAnimationDuration,
+          themeAnimationDuration: DurationConstants.themeAnimationDuration,
           themeAnimationCurve: Curves.easeOutCubic,
           builder: (context, child) => _AppContent(child: child!),
           navigatorObservers: [routeObserver],

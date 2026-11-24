@@ -15,15 +15,13 @@ class ThemeToggleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
     final isDark = brightness == Brightness.dark;
-    final reduceMotion = MediaQuery.disableAnimationsOf(context);
-
     return IconButton(
       tooltip: isDark ? 'Use light theme' : 'Use dark theme',
       onPressed: () {
         context.read<ThemeBloc>().add(ChangeTheme(themeMode: ThemeModeManager.oppositeOf(brightness)));
       },
       icon: AnimatedSwitcher(
-        duration: reduceMotion ? Duration.zero : DurationConstants.themeIconAnimationDuration,
+        duration: DurationConstants.themeIconAnimationDuration,
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
         transitionBuilder: (child, animation) {

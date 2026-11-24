@@ -8,8 +8,6 @@ class ProductImageHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.disableAnimationsOf(context)) return child;
-
     return Hero(
       tag: 'product-image-$productId',
       transitionOnUserGestures: true,

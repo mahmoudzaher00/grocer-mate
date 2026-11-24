@@ -160,14 +160,12 @@ class _GalleryIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reduceMotion = MediaQuery.disableAnimationsOf(context);
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List<Widget>.generate(itemCount, (index) {
         final selected = index == currentIndex;
         return AnimatedContainer(
-          duration: reduceMotion ? Duration.zero : const Duration(milliseconds: 220),
+          duration: const Duration(milliseconds: 220),
           curve: Curves.easeOutCubic,
           width: selected ? 22.w : 8.r,
           height: 8.r,

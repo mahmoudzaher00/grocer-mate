@@ -62,13 +62,7 @@ class _BodyState extends State<_Body> with SingleTickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      final reduceMotion = MediaQuery.disableAnimationsOf(context);
-
-      if (reduceMotion) {
-        _entranceController.value = 1;
-      } else {
-        _entranceController.forward();
-      }
+      _entranceController.forward();
     });
   }
 
