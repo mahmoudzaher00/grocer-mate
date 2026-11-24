@@ -16,7 +16,33 @@ import 'route_names.dart';
 
 export 'route_names.dart';
 
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+final AppRouteObserver routeObserver = AppRouteObserver();
+
+class AppRouteObserver extends RouteObserver<ModalRoute<void>> {
+  final ValueNotifier<String?> currentRouteName = ValueNotifier<String?>(null);
+
+  void _updateCurrentRoute(Route<dynamic>? route) {
+    currentRouteName.value = route?.settings.name;
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPush(route, previousRoute);
+    _updateCurrentRoute(route);
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPop(route, previousRoute);
+    _updateCurrentRoute(previousRoute);
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+    _updateCurrentRoute(newRoute);
+  }
+}
 
 class AppRouteGenerator {
   static Route<dynamic> getRoute(RouteSettings settings) {
@@ -34,7 +60,7 @@ class AppRouteGenerator {
 
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => BlocProvider(create: (_) => instance<ProductsBloc>()..add(ProductsRequested(category.id)), child: const ProductsView()),
+          builder: (_) => BlocProvider(create: (_) => instance<ProductsBloc>()..add(ProductsRequested(category)), child: const ProductsView()),
         );
       case productDetailsRoute:
         final product = settings.arguments;

@@ -5,6 +5,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../features/cart/presentation/manager/bloc.dart';
+import '../../features/checkout/presentation/manager/outbox/bloc.dart';
+import '../../features/checkout/presentation/widgets/queued_checkout_coordinator.dart';
 import '../blocs/connectivity/bloc.dart';
 import '../blocs/theme/bloc.dart';
 import '../resources/route_manager.dart';
@@ -25,6 +27,7 @@ class AppEntry extends StatelessWidget {
         BlocProvider<ConnectivityBloc>.value(value: instance<ConnectivityBloc>()),
         BlocProvider<ThemeBloc>.value(value: instance<ThemeBloc>()),
         BlocProvider<CartBloc>.value(value: instance<CartBloc>()),
+        BlocProvider<OutboxBloc>.value(value: instance<OutboxBloc>()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
@@ -54,16 +57,18 @@ class AppEntry extends StatelessWidget {
                       data: appSkeletonizerConfig.copyWith(brightness: brightness),
                       child: MediaQuery(
                         data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
-                        child: Stack(
-                          children: [
-                            Positioned.fill(child: widgets!),
-                            const PositionedDirectional(
-                              top: 0,
-                              start: 0,
-                              end: 0,
-                              child: SafeArea(bottom: false, child: IgnorePointer(child: OfflineBanner())),
-                            ),
-                          ],
+                        child: QueuedCheckoutCoordinator(
+                          child: Stack(
+                            children: [
+                              Positioned.fill(child: widgets!),
+                              const PositionedDirectional(
+                                top: 0,
+                                start: 0,
+                                end: 0,
+                                child: SafeArea(bottom: false, child: IgnorePointer(child: OfflineBanner())),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

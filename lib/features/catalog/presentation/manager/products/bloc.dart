@@ -104,10 +104,10 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
   Future<void> _onProductsRequested(ProductsRequested event, Emitter<ProductsState> emit) async {
     _cancelSearchDebounce();
-    _selectedCategoryId = event.categoryId;
+    _selectedCategoryId = event.category.id;
     _selectedBrand = null;
     _searchQuery = '';
-    _categories = const <Category>[];
+    _categories = <Category>[event.category];
     _brands = const <String>[];
 
     await _refreshProducts(emit: emit, reloadCategories: true, reloadBrands: true);

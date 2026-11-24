@@ -66,7 +66,6 @@ class BaseTextField extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool readOnly;
   final bool closeKeyboardOnTapOutside;
-
   final bool? filledColorTextFiled;
   final TextInputType? textType;
   final TextStyle? hintStyle;
@@ -129,142 +128,73 @@ class _BaseTextFieldState extends State<BaseTextField> {
       height: widget.height,
       width: widget.width ?? MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        boxShadow: widget.isShadow!
-            ? ShadowManager.shadow
-            : ShadowManager.noShadow,
-        borderRadius: widget.isShadow!
-            ? BorderRadius.circular(widget.enabledBorderRadius!)
-            : BorderRadius.zero,
+        boxShadow: widget.isShadow! ? ShadowManager.shadow : ShadowManager.noShadow,
+        borderRadius: widget.isShadow! ? BorderRadius.circular(widget.enabledBorderRadius!) : BorderRadius.zero,
       ),
       child: TextFormField(
         controller: widget.controller,
         initialValue: widget.initialValue,
         autovalidateMode: widget.autoValidateMode,
         autofillHints: widget.autofillHints,
-        onTapOutside: widget.closeKeyboardOnTapOutside
-            ? (_) => FocusManager.instance.primaryFocus?.unfocus()
-            : null,
-        // onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+        onTapOutside: widget.closeKeyboardOnTapOutside ? (_) => FocusManager.instance.primaryFocus?.unfocus() : null,
         enableSuggestions: true,
         readOnly: widget.readOnly,
         style:
-            widget.inputTextStyle ??
-            Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: widget.inputTextSize ?? 14,
-              fontWeight: FontWeight.w500,
-              color: widget.inputTextColor ?? kTextPrimary,
-            ),
+            widget.inputTextStyle ?? Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: widget.inputTextSize ?? 14, fontWeight: FontWeight.w500, color: widget.inputTextColor ?? kTextPrimary),
         cursorColor: widget.cursorColor ?? kPrimary,
         keyboardType: widget.textType ?? TextInputType.text,
         inputFormatters: widget.inputFormatters,
-        textCapitalization:
-            widget.textCapitalization ?? TextCapitalization.none,
+        textCapitalization: widget.textCapitalization ?? TextCapitalization.none,
         onFieldSubmitted: widget.onFieldSubmitted,
         decoration: InputDecoration(
-          // floatingLabelBehavior: FloatingLabelBehavior.never,
           hintText: widget.hintText ?? '',
-
-          floatingLabelStyle:
-              widget.labelStyle ??
-              Theme.of(
-                context,
-              ).textTheme.bodySmall!.copyWith(color: kGrey50, fontSize: 14),
+          floatingLabelStyle: widget.labelStyle ?? Theme.of(context).textTheme.bodySmall!.copyWith(color: kGrey50, fontSize: 14),
           errorMaxLines: widget.errorMaxLines ?? 1,
-          errorStyle:
-              widget.errorTextStyle ??
-              Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: kDarkRed,
-                height: 1.8,
-              ),
+          errorStyle: widget.errorTextStyle ?? Theme.of(context).textTheme.bodySmall!.copyWith(color: kDarkRed, height: 1.8),
           labelText: widget.labelText,
-          labelStyle:
-              widget.labelStyle ??
-              Theme.of(
-                context,
-              ).textTheme.labelSmall!.copyWith(color: kGrey50, fontSize: 12),
-          hintStyle:
-              widget.hintStyle ??
-              Theme.of(context).textTheme.labelSmall!.copyWith(
-                color: kGrey98,
-                fontSize: widget.hintTextSize ?? 14,
-              ),
+          labelStyle: widget.labelStyle ?? Theme.of(context).textTheme.labelSmall!.copyWith(color: kGrey50, fontSize: 12),
+          hintStyle: widget.hintStyle ?? Theme.of(context).textTheme.labelSmall!.copyWith(color: kGrey98, fontSize: widget.hintTextSize ?? 14),
           fillColor: widget.fillColorTextFiled ?? kWhite,
           filled: widget.filledColorTextFiled ?? true,
           prefixIcon: widget.prefixIconWidget,
-          prefixIconConstraints: const BoxConstraints(
-            minWidth: 40,
-            maxWidth: 40.0,
-            maxHeight: 50.0,
-          ),
+          prefixIconConstraints: const BoxConstraints(minWidth: 40, maxWidth: 40.0, maxHeight: 50.0),
           suffixIcon: widget.suffixIcon ?? _suffixIcon(),
           suffix: widget.suffix,
           suffixText: widget.suffixText,
-          suffixStyle: Theme.of(context).textTheme.headlineMedium!.copyWith(
-            color: kGrey50,
-            fontSize: widget.suffixTextSize ?? 14,
-          ),
+          suffixStyle: Theme.of(context).textTheme.headlineMedium!.copyWith(color: kGrey50, fontSize: widget.suffixTextSize ?? 14),
           enabledBorder: widget.borderFromBottom!
               ? UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: widget.enabledBorderColor ?? kBorder,
-                    width: widget.widthBorder ?? 1,
-                  ),
+                  borderSide: BorderSide(color: widget.enabledBorderColor ?? kBorder, width: widget.widthBorder ?? 1),
                 )
               : OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: widget.enabledBorderColor ?? kBorder,
-                    width: widget.widthBorder ?? 1,
-                  ),
-                  borderRadius: BorderRadius.circular(
-                    widget.enabledBorderRadius ?? 8,
-                  ),
+                  borderSide: BorderSide(color: widget.enabledBorderColor ?? kBorder, width: widget.widthBorder ?? 1),
+                  borderRadius: BorderRadius.circular(widget.enabledBorderRadius ?? 8),
                 ),
           focusedBorder: widget.borderFromBottom!
               ? UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: widget.enabledBorderColor ?? kBorder,
-                    width: widget.widthBorder ?? 1,
-                  ),
+                  borderSide: BorderSide(color: widget.enabledBorderColor ?? kBorder, width: widget.widthBorder ?? 1),
                 )
               : OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    widget.focusedBorderRadius ?? 8,
-                  ),
-                  borderSide: BorderSide(
-                    color: widget.focusedBorderColor ?? kBorder,
-                    width: widget.widthBorder ?? 1,
-                  ),
+                  borderRadius: BorderRadius.circular(widget.focusedBorderRadius ?? 8),
+                  borderSide: BorderSide(color: widget.focusedBorderColor ?? kBorder, width: widget.widthBorder ?? 1),
                 ),
           errorBorder: widget.borderFromBottom!
               ? UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: widget.enabledBorderColor ?? kErrorLight,
-                    width: widget.widthBorder ?? 1,
-                  ),
+                  borderSide: BorderSide(color: widget.enabledBorderColor ?? kErrorLight, width: widget.widthBorder ?? 1),
                 )
               : OutlineInputBorder(
                   borderSide: const BorderSide(color: kErrorLight, width: 1),
-                  borderRadius: BorderRadius.circular(
-                    widget.errorBorderRadius ?? 8,
-                  ),
+                  borderRadius: BorderRadius.circular(widget.errorBorderRadius ?? 8),
                 ),
           focusedErrorBorder: widget.borderFromBottom!
               ? UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: widget.enabledBorderColor ?? kErrorLight,
-                    width: widget.widthBorder ?? 1,
-                  ),
+                  borderSide: BorderSide(color: widget.enabledBorderColor ?? kErrorLight, width: widget.widthBorder ?? 1),
                 )
               : OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    widget.focusedErrorBorderRadius ?? 8,
-                  ),
+                  borderRadius: BorderRadius.circular(widget.focusedErrorBorderRadius ?? 8),
                   borderSide: const BorderSide(color: kErrorLight, width: 1),
                 ),
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: widget.contentHorizontalPadding ?? 8,
-            vertical: widget.contentVerticalPadding ?? 12,
-          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: widget.contentHorizontalPadding ?? 8, vertical: widget.contentVerticalPadding ?? 12),
         ),
         onChanged: widget.onChangedFunction,
         onSaved: widget.onSaved,
@@ -274,7 +204,6 @@ class _BaseTextFieldState extends State<BaseTextField> {
         validator: widget.validatorFunction,
         textInputAction: widget.textInputAction,
         obscureText: _obscureText,
-
       ),
     );
   }
@@ -285,16 +214,9 @@ class _BaseTextFieldState extends State<BaseTextField> {
         ? IconButton(
             color: kTextInverse,
             onPressed: () {
-              setState(() {
-                _obscureText = !_obscureText;
-              });
-              //
+              setState(() => _obscureText = !_obscureText);
             },
-            icon: Icon(
-              _obscureText ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
-              color: kTextInverse,
-              size: 18,
-            ),
+            icon: Icon(_obscureText ? CupertinoIcons.eye : CupertinoIcons.eye_slash, color: kTextInverse, size: 18),
           )
         : null;
   }

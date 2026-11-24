@@ -16,7 +16,7 @@ class _ProductAppBarState extends State<_ProductAppBar> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.theme.colorScheme;
-    final expandedHeight = 400.h;
+    final expandedHeight = 350.h;
     final collapseRange = expandedHeight - kToolbarHeight;
     final overlayForeground = colorScheme.brightness == Brightness.dark ? colorScheme.onSurface : colorScheme.onPrimary;
     final collapsedForeground = colorScheme.onSurface;

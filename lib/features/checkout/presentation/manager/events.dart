@@ -8,12 +8,13 @@ sealed class CheckoutEvent extends Equatable {
 }
 
 final class CheckoutStarted extends CheckoutEvent {
-  const CheckoutStarted(this.cart);
+  const CheckoutStarted(this.cart, {this.idempotencyKey});
 
   final Cart cart;
+  final String? idempotencyKey;
 
   @override
-  List<Object?> get props => [cart];
+  List<Object?> get props => [cart, idempotencyKey];
 }
 
 final class CheckoutPriceAccepted extends CheckoutEvent {

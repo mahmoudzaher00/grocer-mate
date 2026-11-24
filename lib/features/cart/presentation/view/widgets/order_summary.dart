@@ -17,6 +17,10 @@ class _OrderSummary extends StatelessWidget {
     );
   }
 
+  void _queueOfflinePurchase(BuildContext context) {
+    context.read<OutboxBloc>().add(OutboxPurchaseQueued(cart));
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.theme.colorScheme;
@@ -77,25 +81,44 @@ class _OrderSummary extends StatelessWidget {
               emphasize: true,
             ),
             SizedBox(height: 20.h),
-            BlocBuilder<ConnectivityBloc, ConnectivityState>(
-              buildWhen: (previous, current) => previous.runtimeType != current.runtimeType,
-              builder: (context, state) {
-                final isOnline = state is ConnectivityOnline;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    FilledButton.icon(onPressed: isOnline ? () => _startCheckout(context) : null, icon: const Icon(Icons.shopping_cart_checkout_rounded), label: const Text('Place order')),
-                    if (state.isOffline) ...[
-                      SizedBox(height: 8.h),
-                      Text(
-                        'Connect to the internet to place your order.',
-                        textAlign: TextAlign.center,
-                        style: context.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
-                      ),
+            BlocBuilder<OutboxBloc, OutboxState>(
+              builder: (context, outboxState) => BlocBuilder<ConnectivityBloc, ConnectivityState>(
+                buildWhen: (previous, current) => previous.runtimeType != current.runtimeType,
+                builder: (context, connectivityState) {
+                  final isOnline = connectivityState is ConnectivityOnline;
+                  final isOffline = connectivityState is ConnectivityOffline;
+                  final hasPendingPurchase = outboxState.hasPendingPurchase;
+                  final buttonLabel = hasPendingPurchase
+                      ? 'Complete queued purchase first'
+                      : isOnline
+                      ? 'Place order'
+                      : isOffline
+                      ? 'Buy offline'
+                      : 'Checking connection';
+                  final onPressed = hasPendingPurchase
+                      ? null
+                      : isOnline
+                      ? () => _startCheckout(context)
+                      : isOffline
+                      ? () => _queueOfflinePurchase(context)
+                      : null;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      FilledButton.icon(onPressed: onPressed, icon: Icon(isOnline ? Icons.shopping_cart_checkout_rounded : Icons.schedule_send_rounded), label: Text(buttonLabel)),
+                      if (isOffline && !hasPendingPurchase) ...[
+                        SizedBox(height: 8.h),
+                        Text(
+                          'Your purchase will be stored securely and revalidated when you reconnect.',
+                          textAlign: TextAlign.center,
+                          style: context.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                        ),
+                      ],
                     ],
-                  ],
-                );
-              },
+                  );
+                },
+              ),
             ),
           ],
         ),

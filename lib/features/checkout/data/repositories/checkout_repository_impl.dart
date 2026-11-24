@@ -25,6 +25,8 @@ final class CheckoutRepositoryImpl implements CheckoutRepository {
       return const Left(DataFailure('The checkout data could not be loaded.'));
     } on PlatformException {
       return const Left(DataFailure('The checkout data could not be loaded.'));
+    } on StateError {
+      return const Left(StorageFailure('The checkout result could not be saved safely.'));
     }
   }
 }

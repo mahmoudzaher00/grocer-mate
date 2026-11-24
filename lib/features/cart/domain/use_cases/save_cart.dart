@@ -9,7 +9,7 @@ class SaveCart {
 
   final CartRepository _repository;
 
-  Future<Either<Failure, Unit>> call(Cart cart) {
-    return _repository.saveCart(cart);
+  Future<Either<Failure, Unit>> call({required Cart previousCart, required Cart updatedCart}) {
+    return _repository.saveCart(previousCart: previousCart, updatedCart: updatedCart);
   }
 }

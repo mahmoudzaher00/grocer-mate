@@ -51,7 +51,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   }
 
   Future<void> _persist(Cart previousCart, Cart updatedCart, Emitter<CartState> emit, {String? notice}) async {
-    final result = await _saveCart(updatedCart);
+    final result = await _saveCart(previousCart: previousCart, updatedCart: updatedCart);
     result.fold(
       (failure) => emit(CartActionFailure(cart: previousCart, message: failure.errMessage)),
       (_) => notice == null ? _emitCart(updatedCart, emit) : emit(CartActionNotice(cart: updatedCart, message: notice)),

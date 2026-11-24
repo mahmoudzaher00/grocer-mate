@@ -64,7 +64,7 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   /// Api & Request ************************************************************
 
   Future<void> _onStarted(CheckoutStarted event, Emitter<CheckoutState> emit) async {
-    final request = PurchaseRequest(event.cart);
+    final request = PurchaseRequest(event.cart, idempotencyKey: event.idempotencyKey);
     _checkoutProductIds = event.cart.items.map((item) => item.product.id).toList(growable: false);
     if (request.cart.isEmpty) {
       emit(CheckoutFailure(request: request, message: 'Your Cart is empty.'));

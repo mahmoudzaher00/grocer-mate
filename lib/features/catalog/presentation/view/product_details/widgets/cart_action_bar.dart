@@ -40,17 +40,19 @@ class _CartActionBarState extends State<_CartActionBar> {
       listenWhen: (previous, current) => current is CartActionFailure && previous != current,
       listener: (context, state) {
         if (state case CartActionFailure(:final message)) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(message)));
+          showToast(message: message, state: ToastStates.error);
         }
       },
       builder: (context, state) {
+        final cartMutationsBlocked = context.watch<OutboxBloc>().state.blocksCartMutations;
         final inCartQuantity = state.cart?.quantityFor(widget.product.id) ?? 0;
         final remainingStock = (widget.product.stock - inCartQuantity).clamp(0, widget.product.stock).toInt();
         final effectiveQuantity = remainingStock == 0 ? 1 : _quantity.clamp(1, remainingStock).toInt();
-        final isAvailable = !widget.product.isOutOfStock && remainingStock > 0;
-        final buttonLabel = widget.product.isOutOfStock
+        final canMutateCart = state.cart != null && !cartMutationsBlocked;
+        final isAvailable = canMutateCart && !widget.product.isOutOfStock && remainingStock > 0;
+        final buttonLabel = !canMutateCart
+            ? 'Cart unavailable'
+            : widget.product.isOutOfStock
             ? 'Out of stock'
             : remainingStock == 0
             ? 'Max in cart'

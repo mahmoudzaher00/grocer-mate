@@ -23,13 +23,16 @@ final class CheckoutOutcome {
   final List<String> processedProductIds;
 }
 
-Future<CheckoutOutcome?> showCheckoutSheet({required BuildContext context, required Cart cart}) {
+Future<CheckoutOutcome?> showCheckoutSheet({required BuildContext context, required Cart cart, String? idempotencyKey}) {
   return showModalBottomSheet<CheckoutOutcome>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => BlocProvider(create: (_) => instance<CheckoutBloc>()..add(CheckoutStarted(cart)), child: const CheckoutView()),
+    builder: (_) => BlocProvider(
+      create: (_) => instance<CheckoutBloc>()..add(CheckoutStarted(cart, idempotencyKey: idempotencyKey)),
+      child: const CheckoutView(),
+    ),
   );
 }
 

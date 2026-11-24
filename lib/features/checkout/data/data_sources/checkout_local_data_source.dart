@@ -2,16 +2,20 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import '../../../../core/app/app_prefs.dart';
 import '../../../../core/resources/asset_manager.dart';
 import '../models/purchase_model.dart';
+
+const String _checkoutReceiptPreferencesKey = 'GROCER_MATE_CHECKOUT_RECEIPT';
 
 abstract interface class CheckoutLocalDataSource {
   Future<PurchaseResponseModel> submitPurchase(PurchaseRequestModel request);
 }
 
 final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
-  CheckoutLocalDataSourceImpl({AssetBundle? assetBundle, this.responseDelay = const Duration(milliseconds: 450)}) : _assetBundle = assetBundle ?? rootBundle;
+  CheckoutLocalDataSourceImpl(this._preferences, {AssetBundle? assetBundle, this.responseDelay = const Duration(milliseconds: 450)}) : _assetBundle = assetBundle ?? rootBundle;
 
+  final AppPreferences _preferences;
   final AssetBundle _assetBundle;
   final Duration responseDelay;
 
@@ -22,6 +26,8 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
   @override
   Future<PurchaseResponseModel> submitPurchase(PurchaseRequestModel request) async {
     _validateRequest(request);
+    final cachedResponse = _loadIdempotentResponse(request.idempotencyKey);
+    if (cachedResponse != null) return PurchaseResponseModel.fromJson(cachedResponse);
     if (responseDelay > Duration.zero) await Future<void>.delayed(responseDelay);
 
     final fixture = await _loadFixture();
@@ -50,17 +56,47 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
     } else {
       response = <String, dynamic>{'status': 'success', 'orderId': fixture.orderId, 'finalTotal': double.parse(request.finalTotal.toStringAsFixed(2))};
     }
-    return PurchaseResponseModel.fromJson(response);
+    final responseModel = PurchaseResponseModel.fromJson(response);
+    if (response['status'] == 'success') {
+      final idempotencyKey = request.idempotencyKey;
+      if (idempotencyKey != null) await _saveIdempotentResponse(idempotencyKey, response);
+    }
+    return responseModel;
   }
 
   void _validateRequest(PurchaseRequestModel request) {
     if (request.items.isEmpty) throw const FormatException('Purchase items must not be empty.');
     if (request.currency.trim().isEmpty) throw const FormatException('Purchase currency must not be empty.');
+    if (request.idempotencyKey case final key? when key.trim().isEmpty) {
+      throw const FormatException('Purchase idempotencyKey must not be empty.');
+    }
     for (final item in request.items) {
       if (item.productId.trim().isEmpty || item.quantity < 1 || !item.expectedPrice.isFinite || item.expectedPrice < 0) {
         throw const FormatException('Purchase item data is invalid.');
       }
     }
+  }
+
+  Map<String, dynamic>? _loadIdempotentResponse(String? idempotencyKey) {
+    if (idempotencyKey == null) return null;
+    final cachedValue = _preferences.getFromPreferences(key: _checkoutReceiptPreferencesKey);
+    if (cachedValue == null) return null;
+    if (cachedValue is! String) throw const FormatException('Cached checkout receipt must be a JSON string.');
+
+    final decoded = jsonDecode(cachedValue);
+    if (decoded is! Map<String, dynamic>) throw const FormatException('Cached checkout receipt must be an object.');
+    final cachedKey = decoded['idempotencyKey'];
+    final response = decoded['response'];
+    if (cachedKey is! String || response is! Map<String, dynamic>) {
+      throw const FormatException('Cached checkout receipt is invalid.');
+    }
+    return cachedKey == idempotencyKey ? response : null;
+  }
+
+  Future<void> _saveIdempotentResponse(String idempotencyKey, Map<String, dynamic> response) async {
+    final encoded = jsonEncode(<String, dynamic>{'idempotencyKey': idempotencyKey, 'response': response});
+    final didSave = await _preferences.saveToPreferences(value: encoded, key: _checkoutReceiptPreferencesKey);
+    if (!didSave) throw StateError('The checkout receipt could not be saved.');
   }
 
   Future<CheckoutFixtureModel> _loadFixture() async {

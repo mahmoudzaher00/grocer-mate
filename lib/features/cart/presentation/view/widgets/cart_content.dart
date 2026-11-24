@@ -30,6 +30,7 @@ class _CartContentState extends State<_CartContent> {
 
   @override
   Widget build(BuildContext context) {
+    final outboxState = context.watch<OutboxBloc>().state;
     return ListView(
       key: const PageStorageKey<String>('cart-scroll-view'),
       padding: EdgeInsetsDirectional.fromSTEB(16.w, 16.h, 16.w, 24.h),
@@ -40,6 +41,7 @@ class _CartContentState extends State<_CartContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                if (outboxState.hasPendingPurchase) ...[_QueuedPurchaseCard(state: outboxState), SizedBox(height: 20.h)],
                 Row(
                   children: [
                     Expanded(

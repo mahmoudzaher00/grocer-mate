@@ -2,7 +2,7 @@ import '../../domain/entities/purchase.dart';
 import '../../../cart/domain/entities/cart_item.dart';
 
 final class PurchaseRequestModel {
-  PurchaseRequestModel({required List<PurchaseItemModel> items, required this.currency, required this.finalTotal, required this.enablePriceRevalidation})
+  PurchaseRequestModel({required List<PurchaseItemModel> items, required this.currency, required this.finalTotal, required this.enablePriceRevalidation, this.idempotencyKey})
     : items = List<PurchaseItemModel>.unmodifiable(items);
 
   factory PurchaseRequestModel.fromEntity(PurchaseRequest request) {
@@ -11,6 +11,7 @@ final class PurchaseRequestModel {
       currency: request.cart.pricing.currency,
       finalTotal: request.cart.total,
       enablePriceRevalidation: request.cart.pricing.enablePriceRevalidation,
+      idempotencyKey: request.idempotencyKey,
     );
   }
 
@@ -18,9 +19,10 @@ final class PurchaseRequestModel {
   final String currency;
   final double finalTotal;
   final bool enablePriceRevalidation;
+  final String? idempotencyKey;
 
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{'items': items.map((item) => item.toJson()).toList(growable: false), 'currency': currency};
+    return <String, dynamic>{'items': items.map((item) => item.toJson()).toList(growable: false), 'currency': currency, if (idempotencyKey != null) 'idempotencyKey': idempotencyKey};
   }
 }
 

@@ -3,16 +3,17 @@ import 'package:equatable/equatable.dart';
 import '../../../cart/domain/entities/cart.dart';
 
 class PurchaseRequest extends Equatable {
-  const PurchaseRequest(this.cart);
+  const PurchaseRequest(this.cart, {this.idempotencyKey});
 
   final Cart cart;
+  final String? idempotencyKey;
 
   PurchaseRequest copyWith({Cart? cart}) {
-    return PurchaseRequest(cart ?? this.cart);
+    return PurchaseRequest(cart ?? this.cart, idempotencyKey: idempotencyKey);
   }
 
   @override
-  List<Object?> get props => [cart];
+  List<Object?> get props => [cart, idempotencyKey];
 }
 
 sealed class PurchaseResult extends Equatable {

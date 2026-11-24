@@ -3,6 +3,16 @@ import '../../domain/entities/cart_pricing.dart';
 final class CartPricingModel extends CartPricing {
   const CartPricingModel({required super.taxRate, required super.deliveryFee, required super.freeDeliveryThreshold, required super.currency, required super.enablePriceRevalidation});
 
+  factory CartPricingModel.fromEntity(CartPricing pricing) {
+    return CartPricingModel(
+      taxRate: pricing.taxRate,
+      deliveryFee: pricing.deliveryFee,
+      freeDeliveryThreshold: pricing.freeDeliveryThreshold,
+      currency: pricing.currency,
+      enablePriceRevalidation: pricing.enablePriceRevalidation,
+    );
+  }
+
   factory CartPricingModel.fromJson(Map<String, dynamic> json) {
     final taxRate = _readNonNegativeDouble(json, 'taxRate');
     final deliveryFee = _readNonNegativeDouble(json, 'deliveryFee');
@@ -35,5 +45,9 @@ final class CartPricingModel extends CartPricing {
       throw FormatException('Cart $key must be a non-negative number.');
     }
     return value.toDouble();
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{'taxRate': taxRate, 'deliveryFee': deliveryFee, 'freeDeliveryThreshold': freeDeliveryThreshold, 'currency': currency, 'enablePriceRevalidation': enablePriceRevalidation};
   }
 }
