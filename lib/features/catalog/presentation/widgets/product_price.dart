@@ -24,12 +24,7 @@ class ProductPrice extends StatelessWidget {
           Text(
             '\$${product.originalPrice.toStringAsFixed(2)}',
             style:
-                originalPriceStyle ??
-                context.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.5),
-                  decoration: TextDecoration.lineThrough,
-                  decorationColor: colorScheme.onSurface.withValues(alpha: 0.5),
-                ),
+                originalPriceStyle ?? context.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant, decoration: TextDecoration.lineThrough, decorationColor: colorScheme.onSurfaceVariant),
           ),
         ],
       ],

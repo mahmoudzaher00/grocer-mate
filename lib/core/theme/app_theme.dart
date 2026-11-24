@@ -10,48 +10,58 @@ import 'system_ui_styles.dart';
 final SkeletonizerConfigData appSkeletonizerConfig = SkeletonizerConfigData(
   effectResolver: (brightness) {
     final isDark = brightness == Brightness.dark;
-    return ShimmerEffect(baseColor: isDark ? kGrey800 : kGrey200, highlightColor: isDark ? kGrey700 : kGrey100, duration: const Duration(milliseconds: 1500));
+    return ShimmerEffect(
+      baseColor: isDark ? kDarkShimmerBase : kLightShimmerBase,
+      highlightColor: isDark ? kDarkShimmerHighlight : kLightShimmerHighlight,
+      duration: const Duration(milliseconds: 1500),
+    );
   },
 );
 
 ThemeData buildLightTheme() {
-  final colorScheme = ColorScheme.fromSeed(seedColor: kGreen, brightness: Brightness.light).copyWith(
-    primary: kGreen,
+  final colorScheme = ColorScheme.fromSeed(
+    seedColor: kGroceryGreen,
+    primary: kGroceryGreen,
     onPrimary: kWhite,
-    secondary: kGreen,
-    tertiary: kPrimaryDark,
+    secondary: kLogoBlue,
+    onSecondary: kWhite,
+    secondaryContainer: kPaleBlue,
+    onSecondaryContainer: kDeepBlue,
+    tertiary: kAmber,
+    onTertiary: kWhite,
+    tertiaryContainer: kPaleAmber,
+    onTertiaryContainer: kDeepAmber,
     surface: kWhite,
-    surfaceContainer: kLightBlueEA,
-    onSurface: kTextPrimary,
-    error: kErrorHighContrast,
-    onError: kWhite,
-    outline: kBorder,
-    shadow: kShadowSm,
+    error: kErrorRed,
+    shadow: kSubtleShadow,
   );
 
-  return _buildAppTheme(colorScheme: colorScheme, scaffoldBackgroundColor: kBackground, systemOverlayStyle: SystemUiStyles.onLightBackground);
+  return _buildAppTheme(colorScheme: colorScheme, scaffoldBackgroundColor: kLightCanvas, systemOverlayStyle: SystemUiStyles.onLightBackground);
 }
 
 ThemeData buildDarkTheme() {
-  final colorScheme = ColorScheme.fromSeed(seedColor: kPeriwinkle, brightness: Brightness.dark).copyWith(
-    primary: kPeriwinkle,
-    onPrimary: kGrey900,
-    secondary: kPeriwinkle,
-    tertiary: kPrimaryLight,
-    surface: kSurfaceDark,
-    surfaceContainer: kGrey900,
-    onSurface: kGrey100,
-    error: kErrorLight,
-    onError: kGrey900,
-    outline: kGrey600,
-    shadow: kTransparent,
+  final colorScheme = ColorScheme.fromSeed(
+    seedColor: kGroceryGreen,
+    brightness: Brightness.dark,
+    primary: kLogoLime,
+    onPrimary: kDarkCanvas,
+    secondary: kSkyBlue,
+    onSecondary: kDeepBlue,
+    secondaryContainer: kDeepBlue,
+    onSecondaryContainer: kPaleBlue,
+    tertiary: kGoldenAmber,
+    onTertiary: kDeepAmber,
+    tertiaryContainer: kDeepAmber,
+    onTertiaryContainer: kPaleAmber,
+    surface: kDarkSurface,
+    shadow: Colors.transparent,
   );
 
-  return _buildAppTheme(colorScheme: colorScheme, scaffoldBackgroundColor: kBackgroundDark, systemOverlayStyle: SystemUiStyles.onDarkBackground);
+  return _buildAppTheme(colorScheme: colorScheme, scaffoldBackgroundColor: kDarkCanvas, systemOverlayStyle: SystemUiStyles.onDarkBackground);
 }
 
 ThemeData _buildAppTheme({required ColorScheme colorScheme, required Color scaffoldBackgroundColor, required SystemUiOverlayStyle systemOverlayStyle}) {
-  final isDark = colorScheme.brightness == Brightness.dark;
+  final disabledColor = colorScheme.onSurface.withValues(alpha: 0.38);
   final textTheme = _buildTextTheme(colorScheme);
 
   return ThemeData(
@@ -59,9 +69,9 @@ ThemeData _buildAppTheme({required ColorScheme colorScheme, required Color scaff
     brightness: colorScheme.brightness,
     colorScheme: colorScheme,
     primaryColor: colorScheme.primary,
-    primaryColorLight: kPrimaryLight,
-    primaryColorDark: kPrimaryDark,
-    disabledColor: isDark ? kGrey600 : kGrey300,
+    primaryColorLight: kLogoLime,
+    primaryColorDark: kGroceryGreen,
+    disabledColor: disabledColor,
     splashColor: colorScheme.primary.withValues(alpha: 0.12),
     highlightColor: colorScheme.primary.withValues(alpha: 0.08),
     scaffoldBackgroundColor: scaffoldBackgroundColor,
@@ -92,7 +102,7 @@ ThemeData _buildAppTheme({required ColorScheme colorScheme, required Color scaff
       ),
     ),
     iconButtonTheme: IconButtonThemeData(style: IconButton.styleFrom(foregroundColor: colorScheme.primary)),
-    buttonTheme: ButtonThemeData(shape: const StadiumBorder(), disabledColor: isDark ? kGrey600 : kGrey300, buttonColor: colorScheme.primary, splashColor: colorScheme.primary.withValues(alpha: 0.12)),
+    buttonTheme: ButtonThemeData(shape: const StadiumBorder(), disabledColor: disabledColor, buttonColor: colorScheme.primary, splashColor: colorScheme.primary.withValues(alpha: 0.12)),
     bottomSheetTheme: _buildBottomSheetTheme(colorScheme),
     dialogTheme: _buildDialogTheme(colorScheme, textTheme),
     textTheme: textTheme,
@@ -101,7 +111,7 @@ ThemeData _buildAppTheme({required ColorScheme colorScheme, required Color scaff
     tabBarTheme: TabBarThemeData(
       overlayColor: WidgetStatePropertyAll(colorScheme.primary.withValues(alpha: 0.12)),
       labelColor: colorScheme.primary,
-      unselectedLabelColor: colorScheme.onSurface.withValues(alpha: 0.65),
+      unselectedLabelColor: colorScheme.onSurfaceVariant,
       indicatorColor: colorScheme.primary,
     ),
   );
@@ -148,12 +158,12 @@ InputDecorationTheme _buildInputDecorationTheme(ColorScheme colorScheme, TextThe
     filled: true,
     fillColor: colorScheme.surface,
     contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-    hintStyle: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.55)),
-    labelStyle: textTheme.labelSmall?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.68)),
+    hintStyle: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+    labelStyle: textTheme.labelSmall?.copyWith(color: colorScheme.onSurfaceVariant),
     floatingLabelStyle: textTheme.bodySmall?.copyWith(color: colorScheme.primary, fontSize: 14.sp),
     errorStyle: textTheme.bodySmall?.copyWith(color: colorScheme.error, height: 1.8),
     errorMaxLines: 1,
-    prefixIconColor: colorScheme.onSurface.withValues(alpha: 0.65),
+    prefixIconColor: colorScheme.onSurfaceVariant,
     suffixIconColor: colorScheme.primary,
     prefixIconConstraints: const BoxConstraints(minWidth: 40, maxWidth: 40, maxHeight: 50),
     border: border(colorScheme.outline),
@@ -169,16 +179,16 @@ TextTheme _buildTextTheme(ColorScheme colorScheme) {
   return TextTheme(
     headlineLarge: _textStyle(fontSize: 16.sp, fontWeight: AppFonts.bold, color: colorScheme.onSurface),
     headlineMedium: _textStyle(fontSize: 14.sp, fontWeight: AppFonts.bold, color: colorScheme.onSurface),
-    headlineSmall: _textStyle(fontSize: 12.sp, fontWeight: AppFonts.bold, color: colorScheme.primary),
+    headlineSmall: _textStyle(fontSize: 12.sp, fontWeight: AppFonts.bold, color: colorScheme.onSurface),
     titleLarge: _textStyle(fontSize: 16.sp, fontWeight: AppFonts.semiBold, color: colorScheme.onSurface),
     titleMedium: _textStyle(fontSize: 14.sp, fontWeight: AppFonts.semiBold, color: colorScheme.onSurface),
-    titleSmall: _textStyle(fontSize: 12.sp, fontWeight: AppFonts.semiBold, color: colorScheme.primary),
+    titleSmall: _textStyle(fontSize: 12.sp, fontWeight: AppFonts.semiBold, color: colorScheme.onSurface),
     bodyLarge: _textStyle(fontSize: 16.sp, fontWeight: AppFonts.regular, color: colorScheme.onSurface),
     bodyMedium: _textStyle(fontSize: 14.sp, fontWeight: AppFonts.regular, color: colorScheme.onSurface),
-    bodySmall: _textStyle(fontSize: 12.sp, fontWeight: AppFonts.regular, color: colorScheme.primary),
+    bodySmall: _textStyle(fontSize: 12.sp, fontWeight: AppFonts.regular, color: colorScheme.onSurfaceVariant),
     labelLarge: _textStyle(fontSize: 16.sp, fontWeight: AppFonts.medium, color: colorScheme.onSurface),
     labelMedium: _textStyle(fontSize: 14.sp, fontWeight: AppFonts.medium, color: colorScheme.onSurface),
-    labelSmall: _textStyle(fontSize: 12.sp, fontWeight: AppFonts.medium, color: colorScheme.primary),
+    labelSmall: _textStyle(fontSize: 12.sp, fontWeight: AppFonts.medium, color: colorScheme.onSurfaceVariant),
   );
 }
 

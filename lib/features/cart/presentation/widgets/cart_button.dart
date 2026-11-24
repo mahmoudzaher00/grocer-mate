@@ -20,7 +20,8 @@ class CartButton extends StatelessWidget {
         selector: (state) => state.cart?.itemCount ?? 0,
         builder: (context, itemCount) {
           final hasPendingPurchase = outboxState.hasPendingPurchase;
-          final resolvedColor = color ?? context.theme.colorScheme.primary;
+          final colorScheme = context.theme.colorScheme;
+          final resolvedColor = color ?? colorScheme.primary;
           final badgeLabel = itemCount > 99 ? '99+' : itemCount.toString();
 
           return Semantics(
@@ -46,10 +47,10 @@ class CartButton extends StatelessWidget {
                       constraints: BoxConstraints(minWidth: 18.r, minHeight: 18.r),
                       alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(horizontal: 4.w),
-                      decoration: BoxDecoration(color: context.theme.colorScheme.error, borderRadius: BorderRadius.circular(999.r)),
+                      decoration: BoxDecoration(color: colorScheme.primary, borderRadius: BorderRadius.circular(999.r)),
                       child: Text(
                         badgeLabel,
-                        style: context.textTheme.labelSmall?.copyWith(color: context.theme.colorScheme.onError, fontSize: 10.sp, height: 1),
+                        style: context.textTheme.labelSmall?.copyWith(color: colorScheme.onPrimary, fontSize: 10.sp, height: 1),
                       ),
                     ),
                   ),
@@ -61,8 +62,8 @@ class CartButton extends StatelessWidget {
                       width: 18.r,
                       height: 18.r,
                       alignment: Alignment.center,
-                      decoration: BoxDecoration(color: context.theme.colorScheme.tertiary, borderRadius: BorderRadius.circular(999.r)),
-                      child: Icon(Icons.schedule_rounded, size: 11.r, color: context.theme.colorScheme.onTertiary),
+                      decoration: BoxDecoration(color: colorScheme.tertiary, borderRadius: BorderRadius.circular(999.r)),
+                      child: Icon(Icons.schedule_rounded, size: 11.r, color: colorScheme.onTertiary),
                     ),
                   ),
               ],

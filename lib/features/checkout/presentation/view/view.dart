@@ -12,6 +12,7 @@ import '../../../cart/domain/entities/cart.dart';
 import '../../../cart/domain/entities/cart_item.dart';
 import '../../domain/entities/purchase.dart';
 import '../manager/bloc.dart';
+import '../manager/outbox/bloc.dart';
 
 part 'widgets/body.dart';
 part 'widgets/review_content.dart';
@@ -89,7 +90,7 @@ class _CheckoutViewState extends State<CheckoutView> {
 
   void _dismissIfAllowed() {
     if (_isDismissing || !mounted || ModalRoute.of(context)?.isCurrent != true) return;
-    if (_canDismiss(context.read<CheckoutBloc>().state)) {
+    if (context.read<OutboxBloc>().state is! OutboxClearing && _canDismiss(context.read<CheckoutBloc>().state)) {
       _isDismissing = true;
       Navigator.of(context).pop();
     }
@@ -103,6 +104,7 @@ class _CheckoutViewState extends State<CheckoutView> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.theme.colorScheme;
+    final isClearing = context.select((OutboxBloc bloc) => bloc.state is OutboxClearing);
 
     return BlocListener<CheckoutBloc, CheckoutState>(
       listener: _onCheckoutStateChanged,
@@ -131,7 +133,8 @@ class _CheckoutViewState extends State<CheckoutView> {
                     children: [
                       Expanded(child: Text('Review checkout', style: context.textTheme.titleLarge)),
                       BlocBuilder<CheckoutBloc, CheckoutState>(
-                        builder: (context, state) => IconButton(tooltip: 'Close checkout', onPressed: _canDismiss(state) ? _dismissIfAllowed : null, icon: const Icon(Icons.close_rounded)),
+                        builder: (context, state) =>
+                            IconButton(tooltip: 'Close checkout', onPressed: !isClearing && _canDismiss(state) ? _dismissIfAllowed : null, icon: const Icon(Icons.close_rounded)),
                       ),
                     ],
                   ),

@@ -58,10 +58,15 @@ final class OutboxReadyForCheckout extends OutboxState {
 }
 
 final class OutboxCheckoutActive extends OutboxState {
-  const OutboxCheckoutActive(QueuedPurchase purchase) : super(purchase: purchase);
+  const OutboxCheckoutActive(QueuedPurchase purchase, {this.discardFailed = false}) : super(purchase: purchase);
+
+  final bool discardFailed;
 
   @override
   QueuedPurchase get purchase => super.purchase!;
+
+  @override
+  List<Object?> get props => [...super.props, discardFailed];
 }
 
 final class OutboxDeferred extends OutboxState {

@@ -8,13 +8,13 @@ extension CategoryVisualExtension on Category {
     final colorScheme = Theme.of(context).colorScheme;
 
     return switch (iconName) {
-      'produce' => (icon: Icons.eco_rounded, color: kSuccess),
-      'dairy' => (icon: Icons.egg_alt_rounded, color: colorScheme.primary),
-      'bakery' => (icon: Icons.bakery_dining_rounded, color: kWarning),
-      'beverages' => (icon: Icons.local_drink_rounded, color: colorScheme.tertiary),
-      'pantry' => (icon: Icons.kitchen_rounded, color: kOrange),
-      'household' => (icon: Icons.cleaning_services_rounded, color: colorScheme.onSurface.withValues(alpha: 0.68)),
-      'personalCare' => (icon: Icons.sanitizer_rounded, color: kPurple),
+      'produce' => (icon: Icons.eco_rounded, color: colorScheme.primary),
+      'dairy' => (icon: Icons.egg_alt_rounded, color: colorScheme.secondary),
+      'bakery' => (icon: Icons.bakery_dining_rounded, color: colorScheme.tertiary),
+      'beverages' => (icon: Icons.local_drink_rounded, color: colorScheme.secondary),
+      'pantry' => (icon: Icons.kitchen_rounded, color: kPantryOrange),
+      'household' => (icon: Icons.cleaning_services_rounded, color: colorScheme.onSurfaceVariant),
+      'personalCare' => (icon: Icons.sanitizer_rounded, color: kPersonalCarePurple),
       _ => (icon: Icons.category_rounded, color: colorScheme.primary),
     };
   }

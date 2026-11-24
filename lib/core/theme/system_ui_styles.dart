@@ -7,15 +7,15 @@ abstract final class SystemUiStyles {
     statusBarColor: kWhite,
     statusBarIconBrightness: Brightness.dark,
     statusBarBrightness: Brightness.light,
-    systemNavigationBarColor: kBackground,
+    systemNavigationBarColor: kLightCanvas,
     systemNavigationBarIconBrightness: Brightness.dark,
   );
 
   static const onDarkBackground = SystemUiOverlayStyle(
-    statusBarColor: kBackgroundDark,
+    statusBarColor: kDarkCanvas,
     statusBarIconBrightness: Brightness.light,
     statusBarBrightness: Brightness.dark,
-    systemNavigationBarColor: kBackgroundDark,
+    systemNavigationBarColor: kDarkCanvas,
     systemNavigationBarIconBrightness: Brightness.light,
   );
 }

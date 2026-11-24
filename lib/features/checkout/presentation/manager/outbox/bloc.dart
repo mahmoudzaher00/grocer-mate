@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/errors/failures.dart';
 import '../../../../cart/domain/entities/cart.dart';
+import '../../../domain/entities/purchase.dart';
 import '../../../domain/entities/queued_purchase.dart';
 import '../../../domain/use_cases/clear_queued_purchase.dart';
 import '../../../domain/use_cases/queue_offline_purchase.dart';
@@ -61,6 +62,9 @@ class OutboxBloc extends Bloc<OutboxEvent, OutboxState> {
         return;
       case OutboxClearRetried():
         await _onClearRetried(emit);
+        return;
+      case OutboxQueuedPurchaseDiscarded():
+        await _onQueuedPurchaseDiscarded(event, emit);
         return;
       case OutboxCompletionAcknowledged():
         if (state is OutboxCompleted) emit(const OutboxEmpty());
@@ -185,5 +189,15 @@ class OutboxBloc extends Bloc<OutboxEvent, OutboxState> {
       ),
       (_) => emit(OutboxCompleted(orderId: currentState.orderId, finalTotal: currentState.finalTotal, currencySymbol: currentState.currencySymbol)),
     );
+  }
+
+  Future<void> _onQueuedPurchaseDiscarded(OutboxQueuedPurchaseDiscarded event, Emitter<OutboxState> emit) async {
+    final currentState = state;
+    final review = event.reviewedRequest;
+    if (currentState is! OutboxCheckoutActive || review.idempotencyKey != currentState.purchase.idempotencyKey || !review.cart.isEmpty) return;
+
+    emit(OutboxClearing(currentState.purchase));
+    final result = await _clearQueuedPurchase();
+    result.fold((_) => emit(OutboxCheckoutActive(currentState.purchase, discardFailed: true)), (_) => emit(const OutboxEmpty()));
   }
 }

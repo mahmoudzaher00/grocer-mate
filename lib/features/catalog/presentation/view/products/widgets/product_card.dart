@@ -13,7 +13,7 @@ class _ProductCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: colorScheme.outline),
+        border: Border.all(color: colorScheme.outlineVariant),
         boxShadow: AppShadows.cardShadow(colorScheme.shadow),
       ),
       child: Material(
@@ -46,7 +46,7 @@ class _ProductCard extends StatelessWidget {
                         product.brand,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.bodySmall?.copyWith(color: colorScheme.onSurface.withValues(alpha: 0.62)),
+                        style: context.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                       ),
                       SizedBox(height: 8.h),
                       ProductPrice(product: product),

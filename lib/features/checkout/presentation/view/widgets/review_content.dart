@@ -16,28 +16,30 @@ class _ReviewContent extends StatelessWidget {
     return ListView(
       padding: EdgeInsetsDirectional.fromSTEB(20.w, 20.h, 20.w, 24.h),
       children: [
-        Container(
-          padding: EdgeInsets.all(16.r),
-          decoration: BoxDecoration(color: colorScheme.tertiaryContainer, borderRadius: BorderRadius.circular(18.r)),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(state.review.isResolved ? Icons.check_circle_outline_rounded : Icons.info_outline_rounded, color: colorScheme.onTertiaryContainer),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Text(
-                  state.review.isResolved ? 'All changes are resolved. Review the updated total, then submit again.' : 'Prices or availability changed. Resolve every item before submitting again.',
-                  style: context.textTheme.bodyMedium?.copyWith(color: colorScheme.onTertiaryContainer),
+        if (!cart.isEmpty)
+          Container(
+            padding: EdgeInsets.all(16.r),
+            decoration: BoxDecoration(color: colorScheme.tertiaryContainer, borderRadius: BorderRadius.circular(18.r)),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(state.review.isResolved ? Icons.check_circle_outline_rounded : Icons.info_outline_rounded, color: colorScheme.onTertiaryContainer),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    state.review.isResolved ? 'All changes are resolved. Review the updated total, then submit again.' : 'Prices or availability changed. Resolve every item before submitting again.',
+                    style: context.textTheme.bodyMedium?.copyWith(color: colorScheme.onTertiaryContainer),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         if (cart.isEmpty) ...[
           SizedBox(height: 24.h),
           Text('No items remain in this checkout.', textAlign: TextAlign.center, style: context.textTheme.titleMedium),
           SizedBox(height: 8.h),
           Text('Close checkout to keep your current Cart and Saved items unchanged.', textAlign: TextAlign.center, style: context.textTheme.bodyMedium),
+          if (request.idempotencyKey != null) ...[SizedBox(height: 20.h), _DiscardQueuedPurchase(request: request)],
         ] else ...[
           for (final item in affectedItems) ...[
             SizedBox(height: 16.h),
@@ -74,6 +76,37 @@ class _ReviewContent extends StatelessWidget {
           ],
         ],
       ],
+    );
+  }
+}
+
+class _DiscardQueuedPurchase extends StatelessWidget {
+  const _DiscardQueuedPurchase({required this.request});
+
+  final PurchaseRequest request;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<OutboxBloc, OutboxState>(
+      listenWhen: (previous, current) => previous is OutboxClearing && previous.purchase.idempotencyKey == request.idempotencyKey && current is OutboxEmpty,
+      listener: (context, _) {
+        if (ModalRoute.of(context)?.isCurrent == true) Navigator.of(context).pop();
+      },
+      builder: (context, state) {
+        if (state is OutboxClearing) return const Center(child: CircularProgressIndicator());
+        if (state is! OutboxCheckoutActive || state.purchase.idempotencyKey != request.idempotencyKey) return const SizedBox.shrink();
+
+        return Column(
+          children: [
+            if (state.discardFailed) Text('Could not discard the queued purchase. It is still pending.', style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.error)),
+            OutlinedButton.icon(
+              onPressed: () => context.read<OutboxBloc>().add(OutboxQueuedPurchaseDiscarded(request)),
+              icon: const Icon(Icons.delete_outline_rounded),
+              label: Text(state.discardFailed ? 'Retry discard' : 'Discard queued purchase'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

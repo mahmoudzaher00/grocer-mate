@@ -3,7 +3,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../theme/app_colors.dart';
 import '../../theme/app_shadows.dart';
 
 class NetworkImageWidget extends StatelessWidget {
@@ -72,7 +71,7 @@ class NetworkImageWidget extends StatelessWidget {
     final fallback = _buildFallback(context);
     final imageContent = switch ((image.isEmpty, isAsset || !isNetwork)) {
       (true, _) => fallback,
-      (false, true) => _buildAssetImage(resolvedBorderRadius),
+      (false, true) => _buildAssetImage(context, resolvedBorderRadius),
       (false, false) => _buildNetworkImage(context, fallback, resolvedBorderRadius),
     };
     final borderedContent = isCircular ? imageContent : _addBorder(imageContent, resolvedBorderRadius);
@@ -91,11 +90,12 @@ class NetworkImageWidget extends StatelessWidget {
     return Semantics(label: label, image: true, button: onTap != null, onTap: onTap, excludeSemantics: true, child: result);
   }
 
-  Widget _buildAssetImage(BorderRadius resolvedBorderRadius) {
+  Widget _buildAssetImage(BuildContext context, BorderRadius resolvedBorderRadius) {
     if (isCircular) {
       return _buildCircularFrame(
+        context,
         defaultBorderWidth: 1,
-        child: CircleAvatar(radius: radiusCircleAvatar, backgroundColor: circleColor ?? kWhite, backgroundImage: AssetImage(image)),
+        child: CircleAvatar(radius: radiusCircleAvatar, backgroundColor: circleColor ?? Theme.of(context).colorScheme.surface, backgroundImage: AssetImage(image)),
       );
     }
 
@@ -129,17 +129,18 @@ class NetworkImageWidget extends StatelessWidget {
     if (!isCircular) return cachedImage;
 
     return _buildCircularFrame(
+      context,
       defaultBorderWidth: 2,
-      child: CircleAvatar(radius: radiusCircleAvatar, backgroundColor: bgColor ?? kWhite, child: cachedImage),
+      child: CircleAvatar(radius: radiusCircleAvatar, backgroundColor: bgColor ?? Theme.of(context).colorScheme.surface, child: cachedImage),
     );
   }
 
-  Widget _buildCircularFrame({required double defaultBorderWidth, required Widget child}) {
+  Widget _buildCircularFrame(BuildContext context, {required double defaultBorderWidth, required Widget child}) {
     return Container(
       padding: EdgeInsets.all(circlePadding ?? 1),
       decoration: BoxDecoration(
-        color: circleColor ?? kWhite,
-        border: Border.all(color: circleBorderColor ?? kWhite, width: borderWidth ?? defaultBorderWidth),
+        color: circleColor ?? Theme.of(context).colorScheme.surface,
+        border: Border.all(color: circleBorderColor ?? Theme.of(context).colorScheme.surface, width: borderWidth ?? defaultBorderWidth),
         shape: BoxShape.circle,
       ),
       child: child,
@@ -152,7 +153,7 @@ class NetworkImageWidget extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: resolvedBorderRadius,
-        border: Border.all(color: borderColor ?? kTransparent, width: borderWidth ?? 2),
+        border: Border.all(color: borderColor ?? Colors.transparent, width: borderWidth ?? 2),
       ),
       child: child,
     );
@@ -182,7 +183,7 @@ class NetworkImageWidget extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final fallback = svgAsset != null
         ? SvgPicture.asset(svgAsset!, height: errorImageHeight ?? height, width: errorImageWidth ?? width, fit: errorImageFit ?? BoxFit.contain)
-        : Icon(isAvatar ? Icons.person_outline_rounded : Icons.image_not_supported_outlined, size: 32, color: colorScheme.onSurface.withValues(alpha: 0.55));
+        : Icon(isAvatar ? Icons.person_outline_rounded : Icons.image_not_supported_outlined, size: 32, color: colorScheme.onSurfaceVariant);
 
     return SizedBox(
       height: errorImageHeight ?? height,

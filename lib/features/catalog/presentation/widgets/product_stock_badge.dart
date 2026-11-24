@@ -5,37 +5,37 @@ import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../domain/entities/product.dart';
 
 class ProductStockBadge extends StatelessWidget {
-  const ProductStockBadge({required this.product, super.key});
+  const ProductStockBadge({required this.product, super.key}) : _detailed = false;
+
+  const ProductStockBadge.detailed({required this.product, super.key}) : _detailed = true;
 
   final Product product;
+  final bool _detailed;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.theme.colorScheme;
-    final visual = _resolveVisual(colorScheme);
+    final scheme = context.theme.colorScheme;
+    final (label, icon, background, foreground) = switch (product) {
+      Product(isOutOfStock: true) => ('Out of stock', Icons.cancel_rounded, scheme.errorContainer, scheme.onErrorContainer),
+      Product(stock: final stock) when stock <= 5 => ('Only $stock left', Icons.inventory_2_rounded, scheme.tertiaryContainer, scheme.onTertiaryContainer),
+      _ => ('In stock', Icons.check_circle_rounded, scheme.primaryContainer, scheme.onPrimaryContainer),
+    };
+    final style = _detailed ? context.textTheme.titleSmall : context.textTheme.labelSmall;
+    final text = Text(label, style: style?.copyWith(color: foreground));
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-      decoration: BoxDecoration(color: visual.backgroundColor, borderRadius: BorderRadius.circular(999.r)),
-      child: Text(visual.label, style: context.textTheme.labelSmall?.copyWith(color: visual.foregroundColor)),
+      padding: _detailed ? EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h) : EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(999.r)),
+      child: _detailed
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 18.r, color: foreground),
+                SizedBox(width: 7.w),
+                text,
+              ],
+            )
+          : text,
     );
   }
-
-  _StockVisual _resolveVisual(ColorScheme colorScheme) {
-    if (product.isOutOfStock) {
-      return _StockVisual(label: 'Out of stock', backgroundColor: colorScheme.errorContainer, foregroundColor: colorScheme.onErrorContainer);
-    }
-    if (product.stock <= 5) {
-      return _StockVisual(label: 'Only ${product.stock} left', backgroundColor: colorScheme.tertiaryContainer, foregroundColor: colorScheme.onTertiaryContainer);
-    }
-    return _StockVisual(label: 'In stock', backgroundColor: colorScheme.secondaryContainer, foregroundColor: colorScheme.onSecondaryContainer);
-  }
-}
-
-class _StockVisual {
-  const _StockVisual({required this.label, required this.backgroundColor, required this.foregroundColor});
-
-  final String label;
-  final Color backgroundColor;
-  final Color foregroundColor;
 }

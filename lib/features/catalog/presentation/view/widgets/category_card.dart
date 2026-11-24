@@ -15,7 +15,7 @@ class _CategoryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: colorScheme.outline),
+        border: Border.all(color: colorScheme.outlineVariant),
         boxShadow: AppShadows.cardShadow(colorScheme.shadow),
       ),
       child: Material(

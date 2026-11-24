@@ -89,16 +89,12 @@ class _ProductSummary extends StatelessWidget {
                 ProductPrice(
                   product: product,
                   currentPriceStyle: context.textTheme.headlineLarge?.copyWith(color: colorScheme.primary, fontSize: 30.sp),
-                  originalPriceStyle: context.textTheme.bodyLarge?.copyWith(
-                    color: colorScheme.onSurface.withValues(alpha: 0.5),
-                    decoration: TextDecoration.lineThrough,
-                    decorationColor: colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
+                  originalPriceStyle: context.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant, decoration: TextDecoration.lineThrough, decorationColor: colorScheme.onSurfaceVariant),
                 ),
                 if (product.hasDiscount) ProductDiscountBadge(percentage: product.discountPercentage),
               ],
             ),
-            _DetailsStockBadge(product: product),
+            ProductStockBadge.detailed(product: product),
           ],
         ),
         SizedBox(height: 24.h),
@@ -118,56 +114,10 @@ class _ProductRating extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.star_rounded, size: 26.r, color: kWarning),
+        Icon(Icons.star_rounded, size: 26.r, color: context.theme.colorScheme.tertiary),
         SizedBox(width: 6.w),
         Text(rating.toStringAsFixed(1), style: context.textTheme.titleLarge?.copyWith(fontSize: 18.sp)),
       ],
-    );
-  }
-}
-
-class _DetailsStockBadge extends StatelessWidget {
-  const _DetailsStockBadge({required this.product});
-
-  final Product product;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = context.theme.colorScheme;
-    final isDark = colorScheme.brightness == Brightness.dark;
-    late final String label;
-    late final IconData icon;
-    late final Color foregroundColor;
-    late final Color backgroundColor;
-
-    if (product.isOutOfStock) {
-      label = 'Out of stock';
-      icon = Icons.cancel_rounded;
-      foregroundColor = colorScheme.onErrorContainer;
-      backgroundColor = colorScheme.errorContainer;
-    } else if (product.stock <= 5) {
-      label = 'Only ${product.stock} left';
-      icon = Icons.inventory_2_rounded;
-      foregroundColor = colorScheme.onTertiaryContainer;
-      backgroundColor = colorScheme.tertiaryContainer;
-    } else {
-      label = 'In stock';
-      icon = Icons.check_circle_rounded;
-      foregroundColor = isDark ? kSuccess : kGreen;
-      backgroundColor = kSuccess.withValues(alpha: isDark ? 0.16 : 0.12);
-    }
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      decoration: BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(999.r)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18.r, color: foregroundColor),
-          SizedBox(width: 7.w),
-          Text(label, style: context.textTheme.titleSmall?.copyWith(color: foregroundColor)),
-        ],
-      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/assets/asset_paths.dart';
 import '../../../../core/storage/app_preferences.dart';
+import '../../../catalog/data/models/product_model.dart';
 import '../models/purchase_model.dart';
 
 const String _checkoutReceiptPreferencesKey = 'GROCER_MATE_CHECKOUT_RECEIPT';
@@ -31,12 +32,16 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
     if (responseDelay > Duration.zero) await Future<void>.delayed(responseDelay);
 
     final fixture = await _loadFixture();
+    final catalogProducts = await _loadCatalogProducts();
     final priceChanges = <Map<String, dynamic>>[];
     final stockIssues = <Map<String, dynamic>>[];
 
     for (final item in request.items) {
-      final currentProduct = fixture.products[item.productId];
-      if (currentProduct == null) continue;
+      final currentProduct = fixture.products[item.productId] ?? catalogProducts[item.productId];
+      if (currentProduct == null) {
+        stockIssues.add(<String, dynamic>{'productId': item.productId, 'available': 0});
+        continue;
+      }
 
       if (request.enablePriceRevalidation && (item.expectedPrice - currentProduct.price).abs() > 0.001) {
         priceChanges.add(<String, dynamic>{'productId': item.productId, 'oldPrice': item.expectedPrice, 'newPrice': currentProduct.price});
@@ -109,5 +114,20 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
     final fixture = CheckoutFixtureModel.fromJson(decoded);
     _cachedFixture = fixture;
     return fixture;
+  }
+
+  Future<Map<String, CheckoutProductSnapshotModel>> _loadCatalogProducts() async {
+    final decoded = jsonDecode(await _assetBundle.loadString(JsonAssets.products));
+    if (decoded is! Map<String, dynamic> || decoded['products'] is! List<dynamic>) {
+      throw const FormatException('Products fixture must contain a list.');
+    }
+
+    final products = <String, CheckoutProductSnapshotModel>{};
+    for (final value in decoded['products'] as List<dynamic>) {
+      if (value is! Map<String, dynamic>) throw const FormatException('Each product must be an object.');
+      final product = ProductModel.fromJson(value);
+      products[product.id] = CheckoutProductSnapshotModel(productId: product.id, price: product.price, stock: product.stock);
+    }
+    return products;
   }
 }

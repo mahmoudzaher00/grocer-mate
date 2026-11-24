@@ -70,6 +70,15 @@ final class OutboxClearRetried extends OutboxEvent {
   const OutboxClearRetried();
 }
 
+final class OutboxQueuedPurchaseDiscarded extends OutboxEvent {
+  const OutboxQueuedPurchaseDiscarded(this.reviewedRequest);
+
+  final PurchaseRequest reviewedRequest;
+
+  @override
+  List<Object?> get props => [reviewedRequest];
+}
+
 final class OutboxCompletionAcknowledged extends OutboxEvent {
   const OutboxCompletionAcknowledged();
 }

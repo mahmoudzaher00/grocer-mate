@@ -42,7 +42,7 @@ class _ReviewItemCard extends StatelessWidget {
             Text('Requested quantity: ${item.quantity}', style: context.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
             if (priceChange case final change?) ...[
               SizedBox(height: 16.h),
-              const _IssueHeader(icon: Icons.price_change_outlined, label: 'Price changed'),
+              _IssueHeader(icon: Icons.price_change_outlined, label: 'Price changed', color: colorScheme.tertiary),
               SizedBox(height: 8.h),
               Text('${_money(change.oldPrice)}  →  ${_money(change.newPrice)}', style: context.textTheme.titleMedium?.copyWith(color: colorScheme.primary)),
               SizedBox(height: 10.h),
@@ -53,7 +53,7 @@ class _ReviewItemCard extends StatelessWidget {
             ],
             if (stockIssue case final issue?) ...[
               SizedBox(height: 16.h),
-              _IssueHeader(icon: Icons.inventory_2_outlined, label: issue.available == 0 ? 'Out of stock' : 'Stock reduced'),
+              _IssueHeader(icon: Icons.inventory_2_outlined, label: issue.available == 0 ? 'Out of stock' : 'Stock reduced', color: issue.available == 0 ? colorScheme.error : colorScheme.tertiary),
               SizedBox(height: 8.h),
               Text(
                 issue.available == 0 ? 'This item is currently unavailable.' : 'Only ${issue.available} ${issue.available == 1 ? 'unit is' : 'units are'} available.',
@@ -80,14 +80,14 @@ class _ReviewItemCard extends StatelessWidget {
 }
 
 class _IssueHeader extends StatelessWidget {
-  const _IssueHeader({required this.icon, required this.label});
+  const _IssueHeader({required this.icon, required this.label, required this.color});
 
   final IconData icon;
   final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final color = context.theme.colorScheme.tertiary;
     return Row(
       children: [
         Icon(icon, size: 20.r, color: color),

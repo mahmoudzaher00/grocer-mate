@@ -17,7 +17,7 @@ class _SlidingTextGroup extends StatelessWidget {
         position: offset,
         child: Text.rich(
           TextSpan(
-            style: titleStyle?.copyWith(color: colorScheme.tertiary),
+            style: titleStyle?.copyWith(color: colorScheme.secondary),
             children: [
               const TextSpan(text: 'Grocer'),
               TextSpan(
