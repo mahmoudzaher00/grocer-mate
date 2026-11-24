@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-import '../../../../core/app/app_prefs.dart';
-import '../../../../core/resources/asset_manager.dart';
+import '../../../../core/assets/asset_paths.dart';
+import '../../../../core/storage/app_preferences.dart';
 import '../models/purchase_model.dart';
 
 const String _checkoutReceiptPreferencesKey = 'GROCER_MATE_CHECKOUT_RECEIPT';
@@ -79,9 +79,8 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
 
   Map<String, dynamic>? _loadIdempotentResponse(String? idempotencyKey) {
     if (idempotencyKey == null) return null;
-    final cachedValue = _preferences.getFromPreferences(key: _checkoutReceiptPreferencesKey);
+    final cachedValue = _preferences.getString(key: _checkoutReceiptPreferencesKey);
     if (cachedValue == null) return null;
-    if (cachedValue is! String) throw const FormatException('Cached checkout receipt must be a JSON string.');
 
     final decoded = jsonDecode(cachedValue);
     if (decoded is! Map<String, dynamic>) throw const FormatException('Cached checkout receipt must be an object.');
@@ -95,7 +94,7 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
 
   Future<void> _saveIdempotentResponse(String idempotencyKey, Map<String, dynamic> response) async {
     final encoded = jsonEncode(<String, dynamic>{'idempotencyKey': idempotencyKey, 'response': response});
-    final didSave = await _preferences.saveToPreferences(value: encoded, key: _checkoutReceiptPreferencesKey);
+    final didSave = await _preferences.setString(value: encoded, key: _checkoutReceiptPreferencesKey);
     if (!didSave) throw StateError('The checkout receipt could not be saved.');
   }
 

@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
-import '../resources/color_manager.dart';
+import '../theme/app_colors.dart';
 
 class AppConstants {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

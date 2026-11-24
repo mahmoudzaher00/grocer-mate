@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-import 'color_manager.dart';
+import 'app_colors.dart';
 
 class ShadowManager {
   static final List<BoxShadow> brandMarkShadow = [BoxShadow(color: kPrimary.withValues(alpha: 0.16), blurRadius: 36, spreadRadius: 8, offset: const Offset(0, 14))];

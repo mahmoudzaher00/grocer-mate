@@ -40,7 +40,6 @@ dependencies:
   # --- DEPENDENCY INJECTION & LOCAL STORAGE ---
   get_it: ^9.3.0                            # Service locator pattern for dependency injection
   shared_preferences: ^2.5.6                # Simple key–value local storage for app preferences
-  flutter_secure_storage: ^11.2.0           # Encrypted local storage for sensitive data (tokens, etc.)
 
 dev_dependencies:
   flutter_test:

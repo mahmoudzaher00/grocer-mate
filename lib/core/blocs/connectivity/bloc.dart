@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../resources/network_manager.dart';
+import '../../network/network_manager.dart';
 
 part 'events.dart';
 part 'states.dart';

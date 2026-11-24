@@ -33,8 +33,8 @@ import '../../features/checkout/presentation/manager/bloc.dart';
 import '../../features/checkout/presentation/manager/outbox/bloc.dart';
 import '../blocs/connectivity/bloc.dart';
 import '../blocs/theme/bloc.dart';
-import '../resources/network_manager.dart';
-import 'app_prefs.dart';
+import '../network/network_manager.dart';
+import '../storage/app_preferences.dart';
 
 final instance = GetIt.instance;
 

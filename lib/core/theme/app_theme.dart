@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../resources/color_manager.dart';
-import '../resources/font_manager.dart';
-import '../resources/style_manager.dart';
-import 'app_constants.dart';
+import '../app/app_constants.dart';
+import 'app_colors.dart';
+import 'app_fonts.dart';
+import 'text_styles.dart';
 
 final SkeletonizerConfigData appSkeletonizerConfig = SkeletonizerConfigData(
   effectResolver: (brightness) {
@@ -65,7 +65,7 @@ ThemeData _buildAppTheme({required ColorScheme colorScheme, required Color scaff
     splashColor: colorScheme.primary.withValues(alpha: 0.12),
     highlightColor: colorScheme.primary.withValues(alpha: 0.08),
     scaffoldBackgroundColor: scaffoldBackgroundColor,
-    fontFamily: FontConstants.fontFamily,
+    fontFamily: AppFonts.fontFamily,
     appBarTheme: AppBarTheme(
       elevation: 0,
       systemOverlayStyle: systemOverlayStyle,
@@ -85,7 +85,12 @@ ThemeData _buildAppTheme({required ColorScheme colorScheme, required Color scaff
       ),
     ),
     filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(backgroundColor: colorScheme.primary, foregroundColor: colorScheme.onPrimary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)), )),
+      style: FilledButton.styleFrom(
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      ),
+    ),
     iconButtonTheme: IconButtonThemeData(style: IconButton.styleFrom(foregroundColor: colorScheme.primary)),
     buttonTheme: ButtonThemeData(shape: const StadiumBorder(), disabledColor: isDark ? kGrey600 : kGrey300, buttonColor: colorScheme.primary, splashColor: colorScheme.primary.withValues(alpha: 0.12)),
     bottomSheetTheme: BottomSheetThemeData(backgroundColor: colorScheme.surface, surfaceTintColor: colorScheme.surface, dragHandleColor: colorScheme.outline, dragHandleSize: const Size(48, 5)),

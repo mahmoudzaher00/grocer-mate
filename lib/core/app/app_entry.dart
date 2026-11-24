@@ -9,10 +9,10 @@ import '../../features/checkout/presentation/manager/outbox/bloc.dart';
 import '../../features/checkout/presentation/widgets/queued_checkout_coordinator.dart';
 import '../blocs/connectivity/bloc.dart';
 import '../blocs/theme/bloc.dart';
-import '../resources/route_manager.dart';
+import '../routing/app_router.dart';
+import '../theme/app_theme.dart';
 import 'app_constants.dart';
 import 'app_di.dart';
-import 'app_theme.dart';
 import '../widgets/status_views/offline_banner.dart';
 
 class AppEntry extends StatelessWidget {

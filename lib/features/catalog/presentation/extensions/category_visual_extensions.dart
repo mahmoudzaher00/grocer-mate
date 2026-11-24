@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../core/resources/color_manager.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/category.dart';
 
 extension CategoryVisualExtension on Category {

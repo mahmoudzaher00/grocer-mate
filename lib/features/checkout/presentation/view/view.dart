@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/app/app_di.dart';
-import '../../../../core/resources/shadow_manager.dart';
+import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/widgets/status_views/error_state_widget.dart';
 import '../../../cart/domain/entities/cart.dart';

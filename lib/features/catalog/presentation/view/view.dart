@@ -4,8 +4,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/blocs/connectivity/bloc.dart';
-import '../../../../core/resources/route_names.dart';
-import '../../../../core/resources/shadow_manager.dart';
+import '../../../../core/routing/route_names.dart';
+import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/widgets/buttons/theme_toggle_button.dart';
 import '../../../../core/widgets/status_views/empty_state_widget.dart';

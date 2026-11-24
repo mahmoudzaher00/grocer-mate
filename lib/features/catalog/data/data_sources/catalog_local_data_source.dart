@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-import '../../../../core/resources/asset_manager.dart';
+import '../../../../core/assets/asset_paths.dart';
 import '../models/category_model.dart';
 import '../models/product_details_model.dart';
 import '../models/product_model.dart';

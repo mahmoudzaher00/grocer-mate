@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import '../../resources/shadow_manager.dart';
+import '../../theme/app_shadows.dart';
 
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../resources/color_manager.dart';
+import '../../theme/app_colors.dart';
 
 class NetworkImageWidget extends StatelessWidget {
   const NetworkImageWidget({

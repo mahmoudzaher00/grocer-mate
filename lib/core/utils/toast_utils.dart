@@ -1,28 +1,22 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../resources/color_manager.dart';
+import '../theme/app_colors.dart';
 
-enum ToastStates {
-  success,
-  error,
-  warning,
-  info,
-  general
-}
+enum ToastStates { success, error, warning, info, general }
 
 Color chooseToastColor(ToastStates state) {
   Color color;
 
   switch (state) {
     case ToastStates.success:
-      color =kSuccess;
+      color = kSuccess;
       break;
     case ToastStates.error:
       color = kError;
       break;
     case ToastStates.warning:
-      color =kWarning;
+      color = kWarning;
       break;
     case ToastStates.info:
       color = kGrey600;
@@ -42,8 +36,8 @@ void showToast({required String message, required ToastStates state, Color? text
     toastLength: Toast.LENGTH_LONG,
     gravity: gravity ?? ToastGravity.BOTTOM,
     backgroundColor: chooseToastColor(state),
-    textColor: textColor ??  kWhite,
+    textColor: textColor ?? kWhite,
     fontSize: 16.0,
-    fontAsset: 'assets/fonts/Nunito-Medium.ttf'
+    fontAsset: 'assets/fonts/Nunito-Medium.ttf',
   );
 }

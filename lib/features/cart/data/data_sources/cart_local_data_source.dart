@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-import '../../../../core/app/app_prefs.dart';
-import '../../../../core/resources/asset_manager.dart';
+import '../../../../core/assets/asset_paths.dart';
+import '../../../../core/storage/app_preferences.dart';
 import '../models/cart_item_model.dart';
 import '../models/cart_pricing_model.dart';
 
@@ -29,11 +29,8 @@ final class CartLocalDataSourceImpl implements CartLocalDataSource {
 
   @override
   Future<CartItemsSnapshot> loadItems() async {
-    final cachedValue = _preferences.getFromPreferences(key: _cartPreferencesKey);
+    final cachedValue = _preferences.getString(key: _cartPreferencesKey);
     if (cachedValue == null) return (cartItems: const <CartItemModel>[], savedItems: const <CartItemModel>[], lastDetachedPurchaseKey: null);
-    if (cachedValue is! String) {
-      throw const FormatException('Cached cart must be a JSON string.');
-    }
 
     final decoded = jsonDecode(cachedValue);
     if (decoded is List<dynamic>) {
@@ -82,7 +79,7 @@ final class CartLocalDataSourceImpl implements CartLocalDataSource {
       'savedItems': savedItems.map((item) => item.toJson()).toList(growable: false),
       'lastDetachedPurchaseKey': ?lastDetachedPurchaseKey,
     });
-    final didSave = await _preferences.saveToPreferences(value: encoded, key: _cartPreferencesKey);
+    final didSave = await _preferences.setString(value: encoded, key: _cartPreferencesKey);
     if (!didSave) throw StateError('The shopping lists could not be saved.');
   }
 }

@@ -2,8 +2,8 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
-import '../../resources/color_manager.dart';
-import '../../resources/shadow_manager.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/app_shadows.dart';
 
 class BaseTextField extends StatefulWidget {
   const BaseTextField({

@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/app/app_constants.dart';
 import '../../../../core/blocs/connectivity/bloc.dart';
-import '../../../../core/resources/route_manager.dart';
+import '../../../../core/routing/app_router.dart';
 import '../../../cart/presentation/manager/bloc.dart';
 import '../manager/outbox/bloc.dart';
 import '../view/view.dart';

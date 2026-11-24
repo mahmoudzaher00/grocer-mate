@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart' show FlutterError;
 import 'package:flutter/services.dart';
 
 import '../../../../core/errors/failures.dart';
-import '../../../../core/resources/network_manager.dart';
+import '../../../../core/network/network_manager.dart';
 import '../../../../core/utils/logging/app_logger.dart';
 import '../../domain/entities/category.dart';
 import '../../domain/entities/product_details.dart';

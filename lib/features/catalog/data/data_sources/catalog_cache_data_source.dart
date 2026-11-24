@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../../../../core/app/app_prefs.dart';
+import '../../../../core/storage/app_preferences.dart';
 import '../models/category_model.dart';
 import '../models/product_details_model.dart';
 import '../models/product_model.dart';
@@ -121,9 +121,8 @@ final class CatalogCacheDataSourceImpl implements CatalogCacheDataSource {
   }
 
   Map<String, dynamic> _readCache() {
-    final cachedValue = _preferences.getFromPreferences(key: _catalogCacheKey);
+    final cachedValue = _preferences.getString(key: _catalogCacheKey);
     if (cachedValue == null) return <String, dynamic>{};
-    if (cachedValue is! String) throw const FormatException('Cached catalog must be a JSON string.');
 
     final decoded = jsonDecode(cachedValue);
     if (decoded is! Map<String, dynamic>) throw const FormatException('Cached catalog must be an object.');
@@ -131,7 +130,7 @@ final class CatalogCacheDataSourceImpl implements CatalogCacheDataSource {
   }
 
   Future<void> _writeCache(Map<String, dynamic> cache) async {
-    final didSave = await _preferences.saveToPreferences(key: _catalogCacheKey, value: jsonEncode(cache));
+    final didSave = await _preferences.setString(key: _catalogCacheKey, value: jsonEncode(cache));
     if (!didSave) throw StateError('The catalog cache could not be saved.');
   }
 }

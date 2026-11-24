@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../app/app_prefs.dart';
+import '../../storage/app_preferences.dart';
 import '../../utils/logging/app_logger.dart';
 
 part 'events.dart';

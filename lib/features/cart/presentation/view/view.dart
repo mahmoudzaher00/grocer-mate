@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../core/resources/route_names.dart';
-import '../../../../core/resources/shadow_manager.dart';
+import '../../../../core/routing/route_names.dart';
+import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/blocs/connectivity/bloc.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 import '../../../../core/utils/extensions/value_extensions.dart';
 import '../../../../core/utils/toast_utils.dart';
 import '../../../../core/widgets/buttons/theme_toggle_button.dart';
-import '../../../../core/widgets/display/network_image.dart';
+import '../../../../core/widgets/images/network_image_widget.dart';
 import '../../../../core/widgets/status_views/empty_state_widget.dart';
 import '../../../../core/widgets/status_views/error_state_widget.dart';
 import '../../../checkout/presentation/view/view.dart';

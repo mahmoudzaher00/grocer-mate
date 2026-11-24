@@ -2,7 +2,6 @@ const String imagePath = 'assets/images';
 const String svgPath = 'assets/svgs';
 const String jsonPath = 'assets/jsons';
 
-
 class SvgAssets {
   static const String logo = '$svgPath/logo.svg';
 }
