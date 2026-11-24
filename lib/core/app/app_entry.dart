@@ -46,7 +46,7 @@ class AppEntry extends StatelessWidget {
                 darkTheme: buildDarkTheme(),
                 themeMode: state.themeMode,
                 themeAnimationDuration: reduceMotion ? Duration.zero : AppConstants.themeAnimationDuration,
-                themeAnimationCurve: Curves.easeInOutCubic,
+                themeAnimationCurve: Curves.easeOutCubic,
                 builder: (context, widgets) {
                   final brightness = Theme.of(context).brightness;
                   final systemUiOverlayStyle = brightness == Brightness.dark ? AppConstants.statusBarOnDarkBackground : AppConstants.statusBarOnLightBackground;

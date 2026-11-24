@@ -16,8 +16,8 @@ final SkeletonizerConfigData appSkeletonizerConfig = SkeletonizerConfigData(
 );
 
 ThemeData buildLightTheme() {
-  final colorScheme = ColorScheme.fromSeed(seedColor: kPrimary, brightness: Brightness.light).copyWith(
-    primary: kPrimary,
+  final colorScheme = ColorScheme.fromSeed(seedColor: kGreen, brightness: Brightness.light).copyWith(
+    primary: kGreen,
     onPrimary: kWhite,
     secondary: kGreen,
     tertiary: kPrimaryDark,
@@ -85,8 +85,7 @@ ThemeData _buildAppTheme({required ColorScheme colorScheme, required Color scaff
       ),
     ),
     filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(backgroundColor: colorScheme.primary, foregroundColor: colorScheme.onPrimary),
-    ),
+      style: FilledButton.styleFrom(backgroundColor: colorScheme.primary, foregroundColor: colorScheme.onPrimary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)), )),
     iconButtonTheme: IconButtonThemeData(style: IconButton.styleFrom(foregroundColor: colorScheme.primary)),
     buttonTheme: ButtonThemeData(shape: const StadiumBorder(), disabledColor: isDark ? kGrey600 : kGrey300, buttonColor: colorScheme.primary, splashColor: colorScheme.primary.withValues(alpha: 0.12)),
     bottomSheetTheme: BottomSheetThemeData(backgroundColor: colorScheme.surface, surfaceTintColor: colorScheme.surface, dragHandleColor: colorScheme.outline, dragHandleSize: const Size(48, 5)),
