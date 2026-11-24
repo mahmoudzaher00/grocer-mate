@@ -70,7 +70,7 @@ class _CartActionBarState extends State<_CartActionBar> {
                   constraints: const BoxConstraints(maxWidth: 760),
                   child: Row(
                     children: [
-                      QuantityStepper(quantity: effectiveQuantity, maximum: isAvailable ? remainingStock : 1, onChanged: (quantity) => setState(() => _quantity = quantity)),
+                      QuantityStepper(quantity: effectiveQuantity, maximum: isAvailable ? remainingStock : 1, onStep: (delta) => setState(() => _quantity = effectiveQuantity + delta)),
                       SizedBox(width: 14.w),
                       Expanded(
                         child: FilledButton.icon(

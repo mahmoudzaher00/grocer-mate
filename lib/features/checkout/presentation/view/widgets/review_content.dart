@@ -55,6 +55,10 @@ class _ReviewContent extends StatelessWidget {
           ],
           SizedBox(height: 20.h),
           _CheckoutTotals(cart: cart),
+          if (state.submissionMessage case final message?) ...[
+            SizedBox(height: 12.h),
+            Text(message, textAlign: TextAlign.center, style: context.textTheme.bodyMedium?.copyWith(color: colorScheme.error)),
+          ],
           SizedBox(height: 20.h),
           FilledButton.icon(
             onPressed: state.canResubmit

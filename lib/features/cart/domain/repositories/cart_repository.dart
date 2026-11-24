@@ -9,5 +9,5 @@ abstract interface class CartRepository {
 
   Future<Either<Failure, Unit>> saveCart({required Cart previousCart, required Cart updatedCart});
 
-  Future<Either<Failure, Cart>> detachItemsForQueuedPurchase({required String purchaseKey, required List<CartItem> items});
+  Future<Either<Failure, Cart>> detachItemsForQueuedPurchase({required String purchaseKey, required List<CartItem> items, Future<Either<Failure, Unit>> Function()? persistPendingPurchase});
 }

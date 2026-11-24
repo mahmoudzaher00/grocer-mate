@@ -3,19 +3,25 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import '../../../../core/assets/asset_paths.dart';
+import '../../../../core/network/network_manager.dart';
 import '../../../../core/storage/app_preferences.dart';
 import '../../../catalog/data/models/product_model.dart';
 import '../models/purchase_model.dart';
 
 const String _checkoutReceiptPreferencesKey = 'GROCER_MATE_CHECKOUT_RECEIPT';
 
+final class CheckoutOfflineException implements Exception {
+  const CheckoutOfflineException();
+}
+
 abstract interface class CheckoutLocalDataSource {
   Future<PurchaseResponseModel> submitPurchase(PurchaseRequestModel request);
 }
 
 final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
-  CheckoutLocalDataSourceImpl(this._preferences, {AssetBundle? assetBundle, this.responseDelay = const Duration(milliseconds: 450)}) : _assetBundle = assetBundle ?? rootBundle;
+  CheckoutLocalDataSourceImpl(this._preferences, this._networkManager, {AssetBundle? assetBundle, this.responseDelay = const Duration(milliseconds: 450)}) : _assetBundle = assetBundle ?? rootBundle;
 
+  final NetworkManager _networkManager;
   final AppPreferences _preferences;
   final AssetBundle _assetBundle;
   final Duration responseDelay;
@@ -27,6 +33,7 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
   @override
   Future<PurchaseResponseModel> submitPurchase(PurchaseRequestModel request) async {
     _validateRequest(request);
+    await _requireConnection();
     final cachedResponse = await _loadIdempotentResponse(request.idempotencyKey);
     if (cachedResponse != null) return PurchaseResponseModel.fromJson(cachedResponse);
     if (responseDelay > Duration.zero) await Future<void>.delayed(responseDelay);
@@ -59,6 +66,7 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
     } else if (stockIssues.isNotEmpty) {
       response = <String, dynamic>{'status': 'out_of_stock', 'items': stockIssues};
     } else {
+      await _requireConnection();
       response = <String, dynamic>{'status': 'success', 'orderId': fixture.orderId, 'finalTotal': double.parse(request.finalTotal.toStringAsFixed(2))};
     }
     final responseModel = PurchaseResponseModel.fromJson(response);
@@ -67,6 +75,10 @@ final class CheckoutLocalDataSourceImpl implements CheckoutLocalDataSource {
       if (idempotencyKey != null) await _saveIdempotentResponse(idempotencyKey, response);
     }
     return responseModel;
+  }
+
+  Future<void> _requireConnection() async {
+    if (!await _networkManager.isConnected) throw const CheckoutOfflineException();
   }
 
   void _validateRequest(PurchaseRequestModel request) {

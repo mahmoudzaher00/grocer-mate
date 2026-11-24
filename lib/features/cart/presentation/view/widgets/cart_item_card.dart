@@ -78,7 +78,7 @@ class _CartItemCard extends StatelessWidget {
                         compact: true,
                         quantity: item.quantity,
                         maximum: product.stock,
-                        onChanged: (quantity) => context.read<CartBloc>().add(CartQuantityChanged(productId: product.id, quantity: quantity)),
+                        onStep: (delta) => context.read<CartBloc>().add(CartQuantityChanged(productId: product.id, delta: delta)),
                       ),
                     ],
                   ),

@@ -19,6 +19,8 @@ final class CheckoutRepositoryImpl implements CheckoutRepository {
       final requestModel = PurchaseRequestModel.fromEntity(request);
       final response = await _localDataSource.submitPurchase(requestModel);
       return Right(response.toEntity());
+    } on CheckoutOfflineException {
+      return const Left(NetworkFailure('Connect to the internet and try again.'));
     } on FormatException {
       return const Left(DataFailure('The checkout data is invalid.'));
     } on FlutterError {

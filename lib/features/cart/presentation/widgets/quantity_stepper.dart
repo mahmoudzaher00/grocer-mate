@@ -4,12 +4,12 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../core/utils/extensions/context_extensions.dart';
 
 class QuantityStepper extends StatelessWidget {
-  const QuantityStepper({required this.quantity, required this.onChanged, required this.maximum, this.minimum = 1, this.compact = false, super.key});
+  const QuantityStepper({required this.quantity, required this.onStep, required this.maximum, this.minimum = 1, this.compact = false, super.key});
 
   final int quantity;
   final int minimum;
   final int maximum;
-  final ValueChanged<int> onChanged;
+  final ValueChanged<int> onStep;
   final bool compact;
 
   @override
@@ -21,7 +21,7 @@ class QuantityStepper extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _QuantityButton(tooltip: 'Decrease quantity', icon: Icons.remove_rounded, size: controlSize, onPressed: canDecrease ? () => onChanged(quantity - 1) : null),
+        _QuantityButton(tooltip: 'Decrease quantity', icon: Icons.remove_rounded, size: controlSize, onPressed: canDecrease ? () => onStep(-1) : null),
         SizedBox(
           width: compact ? 38.w : 44.w,
           child: Text(
@@ -30,7 +30,7 @@ class QuantityStepper extends StatelessWidget {
             style: context.textTheme.titleLarge?.copyWith(fontSize: compact ? 15.sp : 17.sp),
           ),
         ),
-        _QuantityButton(tooltip: 'Increase quantity', icon: Icons.add_rounded, size: controlSize, onPressed: canIncrease ? () => onChanged(quantity + 1) : null),
+        _QuantityButton(tooltip: 'Increase quantity', icon: Icons.add_rounded, size: controlSize, onPressed: canIncrease ? () => onStep(1) : null),
       ],
     );
   }

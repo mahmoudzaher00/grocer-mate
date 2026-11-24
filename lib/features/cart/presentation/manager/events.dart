@@ -26,13 +26,13 @@ final class CartProductAdded extends CartEvent {
 }
 
 final class CartQuantityChanged extends CartEvent {
-  const CartQuantityChanged({required this.productId, required this.quantity});
+  const CartQuantityChanged({required this.productId, required this.delta});
 
   final String productId;
-  final int quantity;
+  final int delta;
 
   @override
-  List<Object?> get props => [productId, quantity];
+  List<Object?> get props => [productId, delta];
 }
 
 final class CartItemRemoved extends CartEvent {
@@ -62,11 +62,20 @@ final class SavedItemsMovedToCart extends CartEvent {
   List<Object?> get props => [productIds];
 }
 
-final class CartPurchaseCompleted extends CartEvent {
-  CartPurchaseCompleted(Iterable<String> productIds) : productIds = List<String>.unmodifiable(productIds);
+final class _CheckoutCartRequested extends CartEvent {
+  const _CheckoutCartRequested(this.result);
 
-  final List<String> productIds;
+  final Completer<Cart?> result;
 
   @override
-  List<Object?> get props => [productIds];
+  List<Object?> get props => [result];
+}
+
+final class CartPurchaseCompleted extends CartEvent {
+  const CartPurchaseCompleted(this.purchasedCart);
+
+  final Cart purchasedCart;
+
+  @override
+  List<Object?> get props => [purchasedCart];
 }

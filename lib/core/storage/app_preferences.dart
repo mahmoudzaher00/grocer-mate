@@ -10,7 +10,7 @@ import '../theme/theme_mode_manager.dart';
 const String _themeModeKey = 'PREFS_KEY_THEME_MODE';
 
 /// Platform acknowledgements do not guarantee crash-durable persistence.
-class AppPreferences {
+final class AppPreferences {
   AppPreferences._(this._sharedPreferences);
 
   final SharedPreferences _sharedPreferences;

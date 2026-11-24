@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/errors/failures.dart';
 import '../../../cart/domain/entities/cart.dart';
 import '../../../cart/domain/entities/cart_item.dart';
 import '../../domain/entities/purchase.dart';
@@ -19,7 +20,6 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   /// Data *********************************************************************
 
   final SubmitPurchase _submitPurchase;
-  List<String> _checkoutProductIds = const <String>[];
 
   /// Logic ********************************************************************
 
@@ -65,7 +65,6 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
 
   Future<void> _onStarted(CheckoutStarted event, Emitter<CheckoutState> emit) async {
     final request = PurchaseRequest(event.cart, idempotencyKey: event.idempotencyKey);
-    _checkoutProductIds = event.cart.items.map((item) => item.product.id).toList(growable: false);
     if (request.cart.isEmpty) {
       emit(CheckoutFailure(request: request, message: 'Your Cart is empty.'));
       return;
@@ -129,12 +128,19 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   }
 
   Future<void> _submit(PurchaseRequest request, Emitter<CheckoutState> emit) async {
+    final previous = state;
     emit(CheckoutSubmitting(request));
     final result = await _submitPurchase(request);
     result.fold(
-      (failure) => emit(CheckoutFailure(request: request, message: failure.errMessage)),
+      (failure) {
+        if (failure is NetworkFailure && previous is CheckoutReviewRequired) {
+          emit(CheckoutReviewRequired(request: request, review: previous.review, submissionMessage: failure.errMessage));
+        } else {
+          emit(CheckoutFailure(request: request, message: failure.errMessage));
+        }
+      },
       (purchaseResult) => switch (purchaseResult) {
-        PurchaseSuccess() => emit(CheckoutSucceeded(purchase: purchaseResult, processedProductIds: _checkoutProductIds)),
+        PurchaseSuccess() => emit(CheckoutSucceeded(purchase: purchaseResult, purchasedCart: request.cart)),
         PurchaseReview() => emit(CheckoutReviewRequired(request: request, review: purchaseResult)),
       },
     );

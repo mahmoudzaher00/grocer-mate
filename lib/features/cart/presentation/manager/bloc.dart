@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,8 +30,15 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     return (events, mapper) => events.asyncExpand(mapper);
   }
 
+  Future<Cart?> cartForCheckout() {
+    final result = Completer<Cart?>();
+    add(_CheckoutCartRequested(result));
+    return result.future;
+  }
+
   Future<void> _onEvent(CartEvent event, Emitter<CartState> emit) {
     return switch (event) {
+      _CheckoutCartRequested() => Future<void>.sync(() => event.result.complete(_currentCart)),
       CartRequested() || CartRetried() => _onCartRequested(emit),
       CartProductAdded() => _onProductAdded(event, emit),
       CartQuantityChanged() => _onQuantityChanged(event, emit),
@@ -101,9 +110,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         break;
       }
     }
-    if (currentItem == null || event.quantity < 1 || event.quantity > currentItem.product.stock || event.quantity == currentItem.quantity) return;
+    if (currentItem == null) return;
+    final quantity = currentItem.quantity + event.delta;
+    if (quantity < 1 || quantity > currentItem.product.stock) return;
 
-    final items = _replaceItem(cart.items, event.productId, currentItem.copyWith(quantity: event.quantity));
+    final items = _replaceItem(cart.items, event.productId, currentItem.copyWith(quantity: quantity));
     await _persist(cart, cart.copyWith(items: items), emit);
   }
 
@@ -195,11 +206,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   Future<void> _onPurchaseCompleted(CartPurchaseCompleted event, Emitter<CartState> emit) async {
     final cart = _currentCart;
-    final purchasedIds = event.productIds.toSet();
-    if (cart == null || purchasedIds.isEmpty) return;
+    if (cart == null) return;
 
-    final remainingItems = cart.items.where((item) => !purchasedIds.contains(item.product.id)).toList(growable: false);
-    if (remainingItems.length == cart.items.length) return;
+    final purchased = {for (final item in event.purchasedCart.items) item.product.id: item.quantity};
+    final remainingItems = <CartItem>[];
+    for (final item in cart.items) {
+      final quantity = item.quantity - (purchased[item.product.id] ?? 0);
+      if (quantity > 0) remainingItems.add(item.copyWith(quantity: quantity));
+    }
 
     await _persist(cart, cart.copyWith(items: remainingItems), emit);
   }

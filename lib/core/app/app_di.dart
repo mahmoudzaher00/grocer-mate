@@ -47,7 +47,7 @@ Future<void> initializeDependencies() async {
   instance.registerLazySingleton<CatalogLocalDataSource>(() => CatalogLocalDataSourceImpl(simulatePaginationFailure: kDebugMode));
   instance.registerLazySingleton<CatalogCacheDataSource>(() => CatalogCacheDataSourceImpl(instance<AppPreferences>()));
   instance.registerLazySingleton<CartLocalDataSource>(() => CartLocalDataSourceImpl(instance<AppPreferences>()));
-  instance.registerLazySingleton<CheckoutLocalDataSource>(() => CheckoutLocalDataSourceImpl(instance<AppPreferences>()));
+  instance.registerLazySingleton<CheckoutLocalDataSource>(() => CheckoutLocalDataSourceImpl(instance<AppPreferences>(), instance<NetworkManager>()));
   instance.registerLazySingleton<CheckoutOutboxLocalDataSource>(() => CheckoutOutboxLocalDataSourceImpl(instance<AppPreferences>()));
 
   /// Repositories *************************************************************

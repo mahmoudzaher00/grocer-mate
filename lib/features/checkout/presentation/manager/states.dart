@@ -18,17 +18,18 @@ final class CheckoutSubmitting extends CheckoutState {
 }
 
 final class CheckoutReviewRequired extends CheckoutState {
-  const CheckoutReviewRequired({required PurchaseRequest request, required this.review}) : super(request: request);
+  const CheckoutReviewRequired({required PurchaseRequest request, required this.review, this.submissionMessage}) : super(request: request);
 
   @override
   PurchaseRequest get request => super.request!;
 
   final PurchaseReview review;
+  final String? submissionMessage;
 
   bool get canResubmit => review.isResolved && !request.cart.isEmpty;
 
   @override
-  List<Object?> get props => [...super.props, review];
+  List<Object?> get props => [...super.props, review, submissionMessage];
 }
 
 final class CheckoutFailure extends CheckoutState {
@@ -44,11 +45,11 @@ final class CheckoutFailure extends CheckoutState {
 }
 
 final class CheckoutSucceeded extends CheckoutState {
-  CheckoutSucceeded({required this.purchase, required List<String> processedProductIds}) : processedProductIds = List<String>.unmodifiable(processedProductIds), super();
+  CheckoutSucceeded({required this.purchase, required this.purchasedCart});
 
   final PurchaseSuccess purchase;
-  final List<String> processedProductIds;
+  final Cart purchasedCart;
 
   @override
-  List<Object?> get props => [purchase, processedProductIds];
+  List<Object?> get props => [purchase, purchasedCart];
 }

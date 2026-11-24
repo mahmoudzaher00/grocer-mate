@@ -19,11 +19,11 @@ part 'widgets/review_content.dart';
 part 'widgets/review_item_card.dart';
 
 final class CheckoutOutcome {
-  CheckoutOutcome({required this.orderId, required this.finalTotal, required List<String> processedProductIds}) : processedProductIds = List<String>.unmodifiable(processedProductIds);
+  CheckoutOutcome({required this.orderId, required this.finalTotal, required this.purchasedCart});
 
   final String orderId;
   final double finalTotal;
-  final List<String> processedProductIds;
+  final Cart purchasedCart;
 }
 
 Future<CheckoutOutcome?> showCheckoutSheet({required BuildContext context, required Cart cart, String? idempotencyKey}) {

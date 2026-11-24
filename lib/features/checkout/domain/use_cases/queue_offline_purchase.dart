@@ -28,14 +28,11 @@ class QueueOfflinePurchase {
         createdAt: DateTime.now().toUtc(),
         phase: QueuedPurchasePhase.detachingCart,
       );
-      final saveResult = await _repository.savePurchase(purchase);
-      return saveResult.fold(Left.new, (_) async {
-        final detachResult = await _detachQueuedCartItems(purchaseKey: purchase.idempotencyKey, items: purchase.cart.items);
-        return detachResult.fold(Left.new, (_) async {
-          final queuedPurchase = purchase.copyWith(phase: QueuedPurchasePhase.queued);
-          final readyResult = await _repository.savePurchase(queuedPurchase);
-          return readyResult.fold(Left.new, (_) => Right(queuedPurchase));
-        });
+      final detachResult = await _detachQueuedCartItems(purchaseKey: purchase.idempotencyKey, items: purchase.cart.items, persistPendingPurchase: () => _repository.savePurchase(purchase));
+      return detachResult.fold(Left.new, (_) async {
+        final queuedPurchase = purchase.copyWith(phase: QueuedPurchasePhase.queued);
+        final readyResult = await _repository.savePurchase(queuedPurchase);
+        return readyResult.fold(Left.new, (_) => Right(queuedPurchase));
       });
     });
   }

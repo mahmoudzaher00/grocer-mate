@@ -88,7 +88,7 @@ final class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Future<Either<Failure, Cart>> detachItemsForQueuedPurchase({required String purchaseKey, required List<CartItem> items}) {
+  Future<Either<Failure, Cart>> detachItemsForQueuedPurchase({required String purchaseKey, required List<CartItem> items, Future<Either<Failure, Unit>> Function()? persistPendingPurchase}) {
     return _synchronized(() async {
       try {
         if (purchaseKey.trim().isEmpty || items.isEmpty) {
@@ -117,6 +117,16 @@ final class CartRepositoryImpl implements CartRepository {
           if ((cartQuantities[entry.key] ?? 0) < entry.value) {
             return const Left(DataFailure('Queued quantities exceed the matching Cart quantities. The Cart was not changed.'));
           }
+        }
+
+        if (persistPendingPurchase != null) {
+          if (!_itemsMatch(currentCart.items, items)) {
+            return const Left(DataFailure('The Cart changed. Review it before queuing your purchase.'));
+          }
+          // Keep validation and the durable detachment intent inside the same cart operation.
+          final saved = await persistPendingPurchase();
+          final failure = saved.fold<Failure?>((failure) => failure, (_) => null);
+          if (failure != null) return Left(failure);
         }
 
         final quantitiesToDetach = Map<String, int>.of(queuedQuantities);

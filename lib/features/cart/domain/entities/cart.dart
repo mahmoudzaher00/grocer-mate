@@ -13,11 +13,19 @@ class Cart extends Equatable {
   bool get isEmpty => items.isEmpty;
   int get itemCount => items.fold(0, (total, item) => total + item.quantity);
   int get savedItemCount => savedItems.fold(0, (total, item) => total + item.quantity);
-  double get subtotal => items.fold(0, (total, item) => total + item.lineSubtotal);
-  double get discount => items.fold(0, (total, item) => total + item.lineDiscount);
-  double get tax => subtotal * pricing.taxRate;
-  double get deliveryFee => isEmpty || subtotal >= pricing.freeDeliveryThreshold ? 0 : pricing.deliveryFee;
-  double get total => subtotal + tax + deliveryFee;
+
+  static int _cents(double amount) => (amount * 100).round();
+
+  late final int _subtotalCents = items.fold<int>(0, (sum, item) => sum + _cents(item.product.price) * item.quantity);
+  late final int _discountCents = items.fold<int>(0, (sum, item) => sum + (_cents(item.product.originalPrice) - _cents(item.product.price)) * item.quantity);
+  late final int _taxCents = (_subtotalCents * pricing.taxRate).round();
+  late final int _deliveryCents = isEmpty || _subtotalCents >= _cents(pricing.freeDeliveryThreshold) ? 0 : _cents(pricing.deliveryFee);
+
+  double get subtotal => _subtotalCents / 100;
+  double get discount => _discountCents / 100;
+  double get tax => _taxCents / 100;
+  double get deliveryFee => _deliveryCents / 100;
+  double get total => (_subtotalCents + _taxCents + _deliveryCents) / 100;
 
   int quantityFor(String productId) {
     for (final item in items) {

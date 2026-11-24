@@ -10,9 +10,9 @@ class _Body extends StatelessWidget {
     return BlocConsumer<CheckoutBloc, CheckoutState>(
       listenWhen: (_, current) => current is CheckoutSucceeded,
       listener: (context, state) {
-        if (state case CheckoutSucceeded(:final purchase, :final processedProductIds)) {
+        if (state case CheckoutSucceeded(:final purchase, :final purchasedCart)) {
           if (!context.mounted || ModalRoute.of(context)?.isCurrent != true) return;
-          Navigator.of(context).pop(CheckoutOutcome(orderId: purchase.orderId, finalTotal: purchase.finalTotal, processedProductIds: processedProductIds));
+          Navigator.of(context).pop(CheckoutOutcome(orderId: purchase.orderId, finalTotal: purchase.finalTotal, purchasedCart: purchasedCart));
         }
       },
       builder: (context, state) {

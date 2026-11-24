@@ -68,7 +68,7 @@ class NetworkImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolvedBorderRadius = borderRadius ?? BorderRadius.circular(radius);
-    final fallback = _buildFallback(context);
+    final fallback = _ImageFallback(svgAsset: svgAsset, height: errorImageHeight ?? height, width: errorImageWidth ?? width, fit: errorImageFit ?? BoxFit.contain, isAvatar: isAvatar);
     final imageContent = switch ((image.isEmpty, isAsset || !isNetwork)) {
       (true, _) => fallback,
       (false, true) => _buildAssetImage(context, resolvedBorderRadius),
@@ -92,9 +92,11 @@ class NetworkImageWidget extends StatelessWidget {
 
   Widget _buildAssetImage(BuildContext context, BorderRadius resolvedBorderRadius) {
     if (isCircular) {
-      return _buildCircularFrame(
-        context,
-        defaultBorderWidth: 1,
+      return _CircularImageFrame(
+        padding: circlePadding ?? 1,
+        color: circleColor,
+        borderColor: circleBorderColor,
+        borderWidth: borderWidth ?? 1,
         child: CircleAvatar(radius: radiusCircleAvatar, backgroundColor: circleColor ?? Theme.of(context).colorScheme.surface, backgroundImage: AssetImage(image)),
       );
     }
@@ -128,22 +130,12 @@ class NetworkImageWidget extends StatelessWidget {
 
     if (!isCircular) return cachedImage;
 
-    return _buildCircularFrame(
-      context,
-      defaultBorderWidth: 2,
+    return _CircularImageFrame(
+      padding: circlePadding ?? 1,
+      color: circleColor,
+      borderColor: circleBorderColor,
+      borderWidth: borderWidth ?? 2,
       child: CircleAvatar(radius: radiusCircleAvatar, backgroundColor: bgColor ?? Theme.of(context).colorScheme.surface, child: cachedImage),
-    );
-  }
-
-  Widget _buildCircularFrame(BuildContext context, {required double defaultBorderWidth, required Widget child}) {
-    return Container(
-      padding: EdgeInsets.all(circlePadding ?? 1),
-      decoration: BoxDecoration(
-        color: circleColor ?? Theme.of(context).colorScheme.surface,
-        border: Border.all(color: circleBorderColor ?? Theme.of(context).colorScheme.surface, width: borderWidth ?? defaultBorderWidth),
-        shape: BoxShape.circle,
-      ),
-      child: child,
     );
   }
 
@@ -178,16 +170,51 @@ class NetworkImageWidget extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return SpinKitRipple(color: colorScheme.primary, size: 50);
   }
+}
 
-  Widget _buildFallback(BuildContext context) {
+final class _CircularImageFrame extends StatelessWidget {
+  const _CircularImageFrame({required this.padding, required this.borderWidth, required this.child, this.color, this.borderColor});
+
+  final double padding;
+  final double borderWidth;
+  final Widget child;
+  final Color? color;
+  final Color? borderColor;
+
+  @override
+  Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: EdgeInsets.all(padding),
+      decoration: BoxDecoration(
+        color: color ?? colorScheme.surface,
+        border: Border.all(color: borderColor ?? colorScheme.surface, width: borderWidth),
+        shape: BoxShape.circle,
+      ),
+      child: child,
+    );
+  }
+}
+
+final class _ImageFallback extends StatelessWidget {
+  const _ImageFallback({required this.height, required this.width, required this.fit, required this.isAvatar, this.svgAsset});
+
+  final double height;
+  final double width;
+  final BoxFit fit;
+  final bool isAvatar;
+  final String? svgAsset;
+
+  @override
+  Widget build(BuildContext context) {
     final fallback = svgAsset != null
-        ? SvgPicture.asset(svgAsset!, height: errorImageHeight ?? height, width: errorImageWidth ?? width, fit: errorImageFit ?? BoxFit.contain)
-        : Icon(isAvatar ? Icons.person_outline_rounded : Icons.image_not_supported_outlined, size: 32, color: colorScheme.onSurfaceVariant);
+        ? SvgPicture.asset(svgAsset!, height: height, width: width, fit: fit)
+        : Icon(isAvatar ? Icons.person_outline_rounded : Icons.image_not_supported_outlined, size: 32, color: Theme.of(context).colorScheme.onSurfaceVariant);
 
     return SizedBox(
-      height: errorImageHeight ?? height,
-      width: errorImageWidth ?? width,
+      height: height,
+      width: width,
       child: Center(child: fallback),
     );
   }

@@ -150,7 +150,9 @@ class OutboxBloc extends Bloc<OutboxEvent, OutboxState> {
   }
 
   void _onCheckoutClosed(OutboxCheckoutClosed event, Emitter<OutboxState> emit) {
-    if (state case OutboxCheckoutActive(:final purchase) when event.purchaseKey == null || event.purchaseKey == purchase.idempotencyKey) emit(OutboxDeferred(purchase));
+    if (state case OutboxCheckoutActive(:final purchase) when event.purchaseKey == null || event.purchaseKey == purchase.idempotencyKey) {
+      emit(_isOnline ? OutboxDeferred(purchase) : OutboxQueued(purchase));
+    }
   }
 
   void _onManualReviewRequested(Emitter<OutboxState> emit) {
